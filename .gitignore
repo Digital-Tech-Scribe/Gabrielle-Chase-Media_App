@@ -26,3 +26,5 @@ dist-ssr
 # Media & Temporary Files
 tmp_frames/
 primetemplate.webflow.io.mp4
+*.mp4
+
