@@ -77,7 +77,7 @@ const ArtDirScroll = () => {
             >
               Visual Storytelling
               <br />
-              <span style={{ fontStyle: 'italic', fontWeight: 400, color: 'var(--accent-color)' }}>
+              <span style={{ fontStyle: 'italic', fontWeight: 400, color: 'var(--accent)' }}>
                 Elevated
               </span>
             </motion.h1>
@@ -93,8 +93,40 @@ const ArtDirScroll = () => {
                 textShadow: '0 4px 10px rgba(0,0,0,0.8)'
               }}
             >
-              Premium media production & brand strategy inspired by Gabriel Chase Media.
+              Premium Content Production & Brand Strategy
             </motion.p>
+          </motion.div>
+
+          {/* Scroll Indicator */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5, duration: 1 }}
+            style={{
+              position: 'absolute',
+              bottom: '2rem',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              color: '#fff',
+              fontSize: '0.9rem',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+          >
+           <span>Scroll to explore</span>
+           <motion.div
+             animate={{ y: [0, 10, 0] }}
+             transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+             style={{
+               width: '1px',
+               height: '40px',
+               backgroundColor: 'var(--accent)'
+             }}
+           />
           </motion.div>
         </div>
       </div>

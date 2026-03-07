@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import logoLight from '../assets/GCM-logo_light.png';
 
 const navItems = [
@@ -135,7 +136,7 @@ const Navigation = () => {
               }}
             >
               <div style={{ display: 'flex', gap: '2rem', height: '100%' }}>
-                {navItems.map((item, idx) => (
+                {navItems.map((item) => (
                   <div
                     key={item.name}
                     onMouseEnter={() => setActiveMenu(item.name)}
@@ -147,12 +148,8 @@ const Navigation = () => {
                       <div style={{ position: 'absolute', bottom: '100%', left: '-20px', right: '-20px', height: '15px' }} />
                     )}
 
-                    <motion.a
-                      href={`#${item.name.toLowerCase()}`}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ delay: 0.1 + (idx * 0.05) }}
+                    <Link
+                      to={`/${item.name === 'Home' ? '' : item.name.toLowerCase()}`}
                       style={{
                         color: typeof window !== 'undefined' ? '#fff' : '#fff',
                         textDecoration: 'none',
@@ -165,14 +162,14 @@ const Navigation = () => {
                         cursor: 'pointer'
                       }}
                       onMouseOver={(e) => {
-                        e.currentTarget.style.color = '#aaa';
+                        e.currentTarget.style.color = '#C8A882';
                       }}
                       onMouseOut={(e) => {
                         e.currentTarget.style.color = '#fff';
                       }}
                     >
                       {item.name}
-                    </motion.a>
+                    </Link>
 
                     <AnimatePresence>
                       {isMenuAnimComplete && activeMenu === item.name && item.subItems.length > 0 && (
@@ -206,8 +203,8 @@ const Navigation = () => {
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: i * 0.05 }}
                             >
-                              <a
-                                href={`#${sub.toLowerCase().replace(/ /g, '-')}`}
+                              <Link
+                                to={`/${item.name.toLowerCase()}/${sub.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`}
                                 style={{
                                   color: 'rgba(255,255,255,0.7)',
                                   textDecoration: 'none',
@@ -222,7 +219,7 @@ const Navigation = () => {
                                   cursor: 'pointer'
                                 }}
                                 onMouseOver={(e) => {
-                                  e.currentTarget.style.color = '#fff';
+                                  e.currentTarget.style.color = '#C8A882';
                                   e.currentTarget.style.transform = 'translateX(5px)';
                                 }}
                                 onMouseOut={(e) => {
@@ -231,7 +228,7 @@ const Navigation = () => {
                                 }}
                               >
                                 {sub}
-                              </a>
+                              </Link>
                             </motion.div>
                           ))}
                         </motion.div>
