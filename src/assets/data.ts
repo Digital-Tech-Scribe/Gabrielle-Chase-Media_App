@@ -9,6 +9,14 @@ import img6 from './499480675_18406338295100976_5569329076239804991_n.webp';
 import img7 from './500063357_18406613812100976_4608311866107652165_n.webp';
 import img8 from './500578134_18407341429100976_8670122004350935656_n.webp';
 import img9 from './587016891_18435550237100976_1207277761193894304_n.webp';
+import img10 from './500777851_18407341438100976_4402232086289268294_n.webp';
+import img11 from './500789287_18407324677100976_82593333882675201_n.webp';
+import img12 from './500818068_18406613803100976_4648931409964209412_n.webp';
+import img13 from './501159400_18407324647100976_8884621975903622516_n.webp';
+import img14 from './501599143_18407324611100976_3046178844171982922_n.webp';
+import img15 from './502049756_18407326438100976_7339725291611644069_n.webp';
+import img16 from './510962145_18411652162100976_2155278986636990323_n.webp';
+import img17 from './510971276_18411652201100976_1000184677533036612_n.webp';
 
 // We also have videos, we can categorize them if needed
 import vid1 from './AQMlOGAWv8cMgVTS4vqieD0-2_RYbefQ-fqoMrVOLVQQ3CIBiSw4diIftUJjoerd2zY0CZywos2gEQywVpeQD_1PG3nRdJl2ONvo8ec.mp4';
@@ -23,15 +31,13 @@ export const loaderImages = [
   img4
 ];
 
-// For the Art Dir scrolling gallery (can be images or video posters)
+// For the Art Dir scrolling gallery — expanded to 16 unique images
 export const galleryImages = [
-  img5,
-  img6,
-  img7,
-  img8,
-  img9,
-  img1,
-  img2
+  img1, img2, img3, img4,
+  img5, img6, img7, img8,
+  img9, img10, img11, img12,
+  img13, img14, img15, img16,
+  img17
 ];
 
 // For future use if a video hero is needed

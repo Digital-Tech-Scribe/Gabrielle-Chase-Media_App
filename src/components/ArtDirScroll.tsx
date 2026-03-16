@@ -2,44 +2,55 @@ import { useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { galleryImages } from '../assets/data';
 
-const infiniteImages = [...galleryImages, ...galleryImages, ...galleryImages];
-
-// Use the first gallery image for the fixed hero viewport
+// Use the third gallery image for the fixed hero viewport
 const staticHeroBackground = galleryImages[2]; 
+
+// Grid configuration: 3 rows × 5 columns
+// Aspect ratios preserve original card shapes
+const tileAspectRatios = [
+  ['4/3', '3/4', '4/3', '3/4', '4/3'],   // row 0
+  ['3/4', '4/3', '16/9', '4/3', '3/4'],   // row 1 — center tile (col 2) is the focus
+  ['4/3', '3/4', '4/3', '3/4', '4/3'],   // row 2
+];
+
+// Row offsets for visual stagger — row 1 (focus row) has NO offset
+const rowOffsets = ['8vw', '0', '-8vw'];
 
 const ArtDirScroll = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Track scroll only when the Carousel runway hits the top of the viewport
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   });
 
-  // Apply a very gentle spring physics to the scroll progress.
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 40,
     damping: 25,
     restDelta: 0.001
   });
 
-  // PHASE 1: [0 to 0.4] - The slow, graceful contraction into the grid
-  // The carousel items start large and flat, rotating dynamically as you scrub down
+  // PHASE 1: [0 to 0.4] - Graceful contraction from zoomed-in to full grid
   const gridScale = useTransform(smoothProgress, [0, 0.4], [2.5, 1]);
   const gridRotation = useTransform(smoothProgress, [0, 0.4], [0, -12]);
   
-  // Peripherals fade in gradually
+  // Surrounding cards fade in as user scrolls
   const peripheralOpacity = useTransform(smoothProgress, [0, 0.3, 0.4], [0, 0, 1]);
 
-  // PHASE 2: [0.4 to 1.0] - The slow diagonal translation
+  // PHASE 2: [0.4 to 1.0] - Slow diagonal translation
   const currentX = useTransform(smoothProgress, [0.4, 1], ["0%", "-30%"]);
   const currentY = useTransform(smoothProgress, [0.4, 1], ["0%", "-30%"]);
+
+  // Distribute gallery images across the grid
+  const getImage = (rowIndex: number, colIndex: number) => {
+    const flatIndex = rowIndex * 5 + colIndex;
+    return galleryImages[flatIndex % galleryImages.length];
+  };
 
   return (
     <div style={{ position: 'relative', width: '100vw' }}>
       
       {/* 1. SEAMLESS FIXED HERO SECTION */}
-      {/* The Hero image sits at the very bottom z-index and remains entirely fixed */}
       <div style={{ height: '100vh', width: '100vw' }}>
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 0 }}>
           <img 
@@ -48,7 +59,6 @@ const ArtDirScroll = () => {
             style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
             loading="eager"
           />
-          {/* Subtle gradient overlay to enhance text readability */}
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6))' }} />
           
           <motion.div
@@ -132,14 +142,13 @@ const ArtDirScroll = () => {
       </div>
 
       {/* 2. THE ROTATING SCROLL CAROUSEL */}
-      {/* This solid container scrolls up over the fixed Hero layer like a curtain */}
       <div 
         ref={containerRef} 
         style={{ 
           position: 'relative', 
           zIndex: 10, 
           backgroundColor: '#050505', 
-          height: '400vh', // Massive scroll runway for the graceful rotation
+          height: '400vh',
           width: '100vw'
         }}
       >
@@ -155,72 +164,85 @@ const ArtDirScroll = () => {
             justifyContent: 'center'
           }}
         >
-          {/* The Animating Grid Container */}
-          <motion.div
+          {/* 
+            Centering wrapper: positions the grid so that the center cell 
+            (row 1, col 2) aligns with the viewport center.
+            This wrapper does ONLY centering — no animation transforms.
+          */}
+          <div
             style={{
               position: 'absolute',
-              width: '250vw',
-              height: '250vh',
-              // All transforms are strictly tied to the smoothed scroll progress
-              scale: gridScale,
-              rotate: gridRotation,
-              x: currentX,
-              y: currentY,
               display: 'flex',
-              flexDirection: 'column',
-              gap: '2vw',
               alignItems: 'center',
               justifyContent: 'center',
-              willChange: 'transform'
+              width: '100%',
+              height: '100%',
             }}
           >
-            {/* Create rows for the grid */}
-            {[0, 1, 2].map((rowIndex) => (
-              <div
-                key={rowIndex}
-                style={{
-                  display: 'flex',
-                  gap: '2vw',
-                  marginLeft: rowIndex % 2 === 0 ? '0' : '-15vw',
-                  justifyContent: 'center'
-                }}
-              >
-                {infiniteImages.map((src, colIndex) => {
-                  const id = rowIndex * 100 + colIndex;
-                  const isFocusImage = rowIndex === 1 && colIndex === Math.floor(infiniteImages.length / 2);
+            {/* Animated grid — Framer Motion handles scale/rotate/translate */}
+            <motion.div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2vw',
+                alignItems: 'center',
+                justifyContent: 'center',
+                scale: gridScale,
+                rotate: gridRotation,
+                x: currentX,
+                y: currentY,
+                willChange: 'transform'
+              }}
+            >
+              {/* 3 rows × 5 columns */}
+              {tileAspectRatios.map((rowRatios, rowIndex) => (
+                <div
+                  key={rowIndex}
+                  style={{
+                    display: 'flex',
+                    gap: '2vw',
+                    justifyContent: 'center',
+                    // Row stagger via margin — focus row (1) has no offset
+                    marginLeft: rowOffsets[rowIndex],
+                  }}
+                >
+                  {rowRatios.map((ratio, colIndex) => {
+                    const id = rowIndex * 100 + colIndex;
+                    // Focus image: exact center of the grid (row 1, col 2)
+                    const isFocusImage = rowIndex === 1 && colIndex === 2;
 
-                  return (
-                    <motion.div
-                      key={id}
-                      style={{
-                        flexShrink: 0,
-                        width: '35vw',
-                        aspectRatio: isFocusImage ? '16/9' : (id % 3 === 0 ? '4/3' : '3/4'), 
-                        borderRadius: isFocusImage ? '8px' : '16px',
-                        overflow: 'hidden',
-                        backgroundColor: '#111',
-                        boxShadow: '0 30px 60px rgba(0,0,0,0.8)',
-                        // Peripheral images map directly to scroll progress
-                        opacity: isFocusImage ? 1 : peripheralOpacity
-                      }}
-                    >
-                      <img 
-                        src={src} 
-                        alt={`Grid ${id}`} 
+                    return (
+                      <motion.div
+                        key={id}
                         style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          filter: 'contrast(1.1) brightness(0.9)',
+                          flexShrink: 0,
+                          width: '35vw',
+                          aspectRatio: ratio,
+                          borderRadius: isFocusImage ? '8px' : '16px',
+                          overflow: 'hidden',
+                          backgroundColor: '#111',
+                          boxShadow: '0 30px 60px rgba(0,0,0,0.8)',
+                          opacity: isFocusImage ? 1 : peripheralOpacity,
                         }}
-                        loading={isFocusImage ? "eager" : "lazy"}
-                      />
-                    </motion.div>
-                  );
-                })}
-              </div>
-            ))}
-          </motion.div>
+                      >
+                        <img 
+                          src={getImage(rowIndex, colIndex)} 
+                          alt={`Grid ${id}`} 
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            filter: 'contrast(1.1) brightness(0.9)',
+                          }}
+                          loading={isFocusImage ? "eager" : "lazy"}
+                        />
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              ))}
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>
