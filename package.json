@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist --before-add ./scripts/before-add.cjs"
   },
   "dependencies": {
     "framer-motion": "^12.34.3",
