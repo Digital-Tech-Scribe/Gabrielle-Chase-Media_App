@@ -44,7 +44,7 @@ const Loader = ({ onComplete }: LoaderProps) => {
       // Trigger the exit animation then call onComplete
       timer = setTimeout(() => {
         onComplete();
-      }, 1000); // matches the exit transition duration
+      }, 1000); // matches the exit duration
     }
 
     return () => clearTimeout(timer);
@@ -64,7 +64,7 @@ const Loader = ({ onComplete }: LoaderProps) => {
         left: 0,
         width: '100vw',
         height: '100vh',
-        backgroundColor: '#EBEBEB',
+        backgroundColor: '#0D0D0D', // BRAND COLOR
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -89,7 +89,7 @@ const Loader = ({ onComplete }: LoaderProps) => {
         style={{
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: phase === 'flashing' ? '0 30px 60px rgba(0,0,0,0.2)' : 'none'
+          boxShadow: phase === 'flashing' ? '0 30px 60px rgba(201,168,76,0.2)' : 'none'
         }}
       >
         <AnimatePresence mode="popLayout">
@@ -114,11 +114,11 @@ const Loader = ({ onComplete }: LoaderProps) => {
         
         {/* Dark overlay for text readability when expanded */}
         <motion.div
-          animate={{ opacity: phase === 'text' || phase === 'exiting' ? 0.4 : 0 }}
+          animate={{ opacity: phase === 'text' || phase === 'exiting' ? 0.6 : 0 }}
           style={{
             position: 'absolute',
             inset: 0,
-            backgroundColor: '#050505',
+            backgroundColor: '#0D0D0D',
             zIndex: 10
           }}
         />
@@ -134,9 +134,10 @@ const Loader = ({ onComplete }: LoaderProps) => {
         transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         style={{
           position: 'absolute',
-          color: '#EBEBEB',
+          color: '#C9A84C', // BRAND COLOR
           textAlign: 'center',
-          pointerEvents: 'none'
+          pointerEvents: 'none',
+          fontFamily: '"Cormorant Garamond", serif' // BRAND FONT
         }}
       >
         <h1 style={{ 

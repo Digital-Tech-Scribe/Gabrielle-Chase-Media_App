@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom';
-import logoLight from '../assets/GCM-logo_light.png';
+import { logoLight } from '../assets/data';
 
 const Footer = () => {
   return (
     <footer style={{
-      backgroundColor: 'var(--bg-primary)',
-      borderTop: '1px solid var(--border)',
+      backgroundColor: '#0D0D0D', // BRAND COLOR
+      borderTop: '1px solid rgba(245,240,235,0.1)',
       padding: '4rem 2rem 2rem',
-      marginTop: 'auto'
+      marginTop: 'auto',
+      fontFamily: '"DM Sans", sans-serif'
     }}>
       <div style={{
         maxWidth: '1200px',
@@ -21,21 +22,22 @@ const Footer = () => {
         {/* Left Column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <Link to="/" style={{ display: 'block', width: 'fit-content' }}>
-            <img src={logoLight} alt="Gabrielle Chase Media" style={{ height: '40px', width: 'auto' }} />
+            <img src={logoLight} alt="Gabrielle Chase Media" style={{ height: '100px', width: 'auto' }} />
           </Link>
           <p style={{ 
             color: 'var(--text-muted)', 
             fontSize: '0.9rem',
-            maxWidth: '300px'
+            maxWidth: '300px',
+            lineHeight: 1.6
           }}>
-            Content Production & Art Direction · Los Angeles, CA
+            Award-Winning Art Direction & Content Production Studio · Lagos, Nigeria
           </p>
         </div>
 
         {/* Middle Column - Nav Links */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <h4 style={{ 
-            color: 'var(--text-primary)', 
+            color: 'var(--accent)', 
             fontSize: '1rem',
             letterSpacing: '0.05em',
             textTransform: 'uppercase',
@@ -43,20 +45,27 @@ const Footer = () => {
           }}>
             Explore
           </h4>
-          {['Home', 'Work', 'Services', 'About', 'Connect'].map((item) => (
+          {[
+            { name: 'Home', path: '/' },
+            { name: 'About', path: '/about' },
+            { name: 'Services', path: '/services' },
+            { name: 'Work', path: '/work' },
+            { name: 'Contact', path: '/contact' }
+          ].map((item) => (
             <Link 
-              key={item} 
-              to={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
+              key={item.name} 
+              to={item.path}
               style={{
                 color: 'var(--text-muted)',
                 fontSize: '0.95rem',
                 textDecoration: 'none',
-                width: 'fit-content'
+                width: 'fit-content',
+                transition: 'color 0.3s ease'
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
+              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-light)')}
               onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
             >
-              {item}
+              {item.name}
             </Link>
           ))}
         </div>
@@ -64,13 +73,13 @@ const Footer = () => {
         {/* Right Column - Socials */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <h4 style={{ 
-            color: 'var(--text-primary)', 
+            color: 'var(--accent)', 
             fontSize: '1rem',
             letterSpacing: '0.05em',
             textTransform: 'uppercase',
             marginBottom: '0.5rem'
           }}>
-            Follow
+            Contact
           </h4>
           <a 
             href="https://www.instagram.com/gabriellechasemedia" 
@@ -78,23 +87,25 @@ const Footer = () => {
             rel="noopener noreferrer"
             style={{
               color: 'var(--text-muted)',
-              fontSize: '0.95rem'
+              fontSize: '0.95rem',
+              transition: 'color 0.3s ease'
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-light)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
           >
             Instagram
           </a>
           <a 
-            href="mailto:hello@gabriellechasemedia.com"
+            href="mailto:info@gabriellechasemedia.com"
             style={{
               color: 'var(--text-muted)',
-              fontSize: '0.95rem'
+              fontSize: '0.95rem',
+              transition: 'color 0.3s ease'
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-light)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
           >
-            Email Us
+            info@gabriellechasemedia.com
           </a>
         </div>
       </div>
@@ -104,7 +115,7 @@ const Footer = () => {
         maxWidth: '1200px',
         margin: '0 auto',
         paddingTop: '2rem',
-        borderTop: '1px solid var(--border)',
+        borderTop: '1px solid rgba(245,240,235,0.1)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -112,7 +123,7 @@ const Footer = () => {
         gap: '1rem'
       }}>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-          © {new Date().getFullYear()} Gabrielle Chase Media. All rights reserved.
+          © {new Date().getFullYear()} Gabrielle Chase Media Limited. All rights reserved.
         </p>
       </div>
     </footer>
