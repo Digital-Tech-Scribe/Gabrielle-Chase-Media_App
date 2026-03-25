@@ -147,6 +147,7 @@ const ArtDirScroll = () => {
                         {project.video ? (
                           <video 
                             src={project.video} autoPlay loop muted playsInline 
+                            aria-label={`${project.title} video showcase`}
                             style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.8)' }} 
                           />
                         ) : (

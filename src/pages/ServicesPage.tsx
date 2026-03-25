@@ -73,6 +73,7 @@ const ServicesPage = () => {
                           muted 
                           loop 
                           playsInline
+                          aria-label={`${service.name} showcase video`}
                           className="cinematic-filter"
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         >

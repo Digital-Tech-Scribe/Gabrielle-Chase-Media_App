@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { logoLight } from '../assets/data';
@@ -15,12 +15,40 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMenuAnimComplete, setIsMenuAnimComplete] = useState(false);
 
+  const closeMenu = useCallback(() => {
+    setIsOpen(false);
+    setIsMenuAnimComplete(false);
+  }, []);
+
   const toggleMenu = () => {
     if (isOpen) {
-      setIsMenuAnimComplete(false);
+      closeMenu();
+    } else {
+      setIsOpen(true);
     }
-    setIsOpen(!isOpen);
   };
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape' && isOpen) {
+      closeMenu();
+    }
+  }, [isOpen, closeMenu]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   return (
     <>
@@ -84,14 +112,17 @@ const Navigation = () => {
         {/* The Toggle Button */}
         <motion.button
           onClick={toggleMenu}
+          aria-expanded={isOpen}
+          aria-controls="nav-menu"
+          aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
           animate={{ rotate: isOpen ? 90 : 0 }}
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           style={{
             width: '60px',
             height: '60px',
             borderRadius: '50%',
-            backgroundColor: '#0D0D0D', // Brand bg match
-            border: '1px solid rgba(201,168,76,0.2)', // Subtle gold border
+            backgroundColor: '#0D0D0D',
+            border: '1px solid rgba(201,168,76,0.2)',
             color: '#F5F0EB',
             display: 'flex',
             flexDirection: 'column',
@@ -116,6 +147,8 @@ const Navigation = () => {
         <AnimatePresence>
           {isOpen && (
             <motion.div
+              id="nav-menu"
+              role="menu"
               initial={{ width: 0, opacity: 0 }}
               animate={{ width: 'auto', opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
@@ -136,17 +169,18 @@ const Navigation = () => {
                 whiteSpace: 'nowrap'
               }}
             >
-              <div style={{ display: 'flex', gap: '2rem', height: '100%' }}>
+              <div style={{ display: 'flex', gap: '2rem', height: '100%' }} role="none">
                 {navItems.map((item) => (
                   <div
                     key={item.name}
+                    role="menuitem"
                     style={{ position: 'relative', display: 'flex', alignItems: 'center', height: '100%' }}
                   >
                     <Link
                       to={item.path}
-                      onClick={() => setIsOpen(false)}
+                      onClick={closeMenu}
                       style={{
-                        color: typeof window !== 'undefined' ? '#F5F0EB' : '#F5F0EB',
+                        color: '#F5F0EB',
                         textDecoration: 'none',
                         fontFamily: '"DM Sans", sans-serif',
                         fontSize: '0.9rem',
@@ -159,7 +193,7 @@ const Navigation = () => {
                         transition: 'color 0.3s'
                       }}
                       onMouseOver={(e) => {
-                        e.currentTarget.style.color = '#C9A84C'; // Brand gold match
+                        e.currentTarget.style.color = '#C9A84C';
                       }}
                       onMouseOut={(e) => {
                         e.currentTarget.style.color = '#F5F0EB';

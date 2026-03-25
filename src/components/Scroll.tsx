@@ -51,13 +51,12 @@ const ArtDirScroll = () => {
   const rowOffset2 = useTransform(progress, [0, 1], ['-5vw', '0vw']);
   const dynamicRowOffsets = [rowOffset0, rowOffset1, rowOffset2];
 
-  // Exactly 9 items fit into a 3x3 layout matrix
   const gridItems = filmTvProjects.slice(0, 9);
-  const matrix = [
+  const matrix: (typeof filmTvProjects)[0][][] = [
     [gridItems[0], gridItems[1], gridItems[2]],
     [gridItems[3], gridItems[4], gridItems[5]],
     [gridItems[6], gridItems[7], gridItems[8]],
-  ];
+  ].map(row => row.filter(Boolean));
 
   // Hero text fades out smoothly immediately upon scrolling
   const heroOpacity = useTransform(scrollY, [0, 150], [1, 0]);
@@ -138,6 +137,7 @@ const ArtDirScroll = () => {
                     {item.video ? (
                       <motion.video 
                         src={item.video} autoPlay loop muted playsInline 
+                        aria-label={`${item.title} background video`}
                         style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.7)' }} 
                         whileHover={{ scale: 1.05, filter: 'brightness(1.1)', transition: { duration: 0.6 } }} 
                       />

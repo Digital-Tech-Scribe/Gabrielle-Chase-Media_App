@@ -71,6 +71,7 @@ const FilmTVPage = () => {
                       muted 
                       loop 
                       playsInline
+                      aria-label={`${project.title} on ${project.platform || 'streaming'}`}
                       className="cinematic-filter"
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     >

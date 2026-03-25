@@ -7,7 +7,6 @@ interface LoaderProps {
 }
 
 const Loader = ({ onComplete }: LoaderProps) => {
-  const flashImages = loaderImages;
   const [currentIdx, setCurrentIdx] = useState(0);
   const [phase, setPhase] = useState<'flashing' | 'expanding' | 'text' | 'exiting'>('flashing');
 
@@ -17,10 +16,10 @@ const Loader = ({ onComplete }: LoaderProps) => {
     if (phase === 'flashing') {
       const interval = setInterval(() => {
         setCurrentIdx((prev) => {
-          if (prev >= 4) { // 5 flashes ~ 3.0 seconds
+          if (prev >= 4) {
             setPhase('expanding');
             clearInterval(interval);
-            return flashImages.length - 1; // lock onto the last image
+            return loaderImages.length - 1;
           }
           return prev + 1;
         });
@@ -31,26 +30,25 @@ const Loader = ({ onComplete }: LoaderProps) => {
     if (phase === 'expanding') {
       timer = setTimeout(() => {
         setPhase('text');
-      }, 1000); // 1.0s to expand
+      }, 1000);
     } 
     
     if (phase === 'text') {
       timer = setTimeout(() => {
         setPhase('exiting');
-      }, 1500); // 1.5s reading time
+      }, 1500);
     }
 
     if (phase === 'exiting') {
-      // Trigger the exit animation then call onComplete
       timer = setTimeout(() => {
         onComplete();
-      }, 1000); // matches the exit duration
+      }, 1000);
     }
 
     return () => clearTimeout(timer);
   }, [phase, onComplete]);
 
-  const activeImage = flashImages[currentIdx % flashImages.length];
+  const activeImage = loaderImages[currentIdx % loaderImages.length];
 
   return (
     <motion.div

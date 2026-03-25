@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { FormEvent } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Instagram } from 'lucide-react';
 import ScrollFadeIn from '../components/ScrollFadeIn';
-import { services, galleryImages } from '../assets/data';
+import { services } from '../assets/data';
 import '../index.css';
 
 const ContactPage = () => {
@@ -19,32 +19,39 @@ const ContactPage = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = `
+      input:focus, textarea:focus, select:focus {
+        border-color: var(--accent) !important;
+      }
+    `;
+    document.head.appendChild(styleTag);
+    
+    return () => {
+      document.head.removeChild(styleTag);
+    };
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData(prev => ({
+      ...prev,
       [e.target.name]: e.target.value
-    });
-  };
+    }));
+  }, []);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = useCallback((e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSuccess(true);
       setFormData({ name: '', email: '', phone: '', service: '', message: '' });
       
-      // Reset success message after 5 seconds
       setTimeout(() => setIsSuccess(false), 5000);
     }, 1500);
-  };
-
-  // Use a strong, cinematic team/set photo for the side panel
-  const contactImage = galleryImages[14]; // Assuming this is crewLandscape or similar
+  }, []);
 
   return (
     <main className="app-container" style={{ backgroundColor: 'var(--bg-primary)', minHeight: '100vh', display: 'flex' }}>
@@ -54,12 +61,12 @@ const ContactPage = () => {
         
         {/* Left Side: Image Panel */}
         <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '400px', overflow: 'hidden' }}>
-          <img 
-            src={contactImage} 
-            alt="Gabrielle Chase Media Crew" 
-            className="cinematic-filter"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
+          <div 
+            aria-label="Gabrielle Chase Media creative workspace"
+            style={{ width: '100%', height: '100%', backgroundColor: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <span style={{ color: 'var(--accent)', fontSize: '4rem' }}>🎬</span>
+          </div>
           {/* Dark overlay */}
           <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(13,13,13,0.6)' }} />
           
@@ -274,14 +281,5 @@ const inputStyle = {
   outline: 'none',
   transition: 'border-color 0.3s ease'
 };
-
-// Add a little dynamic CSS for input focus
-const styleTag = document.createElement('style');
-styleTag.innerHTML = `
-  input:focus, textarea:focus, select:focus {
-    border-color: var(--accent) !important;
-  }
-`;
-document.head.appendChild(styleTag);
 
 export default ContactPage;

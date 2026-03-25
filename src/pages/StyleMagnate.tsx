@@ -6,7 +6,6 @@ import { filmTvProjects, tutorialVideos } from '../assets/data';
 
 const StyleMagnate = () => {
   const navigate = useNavigate();
-  // Get the Style Magnate project data
   const project = filmTvProjects.find(p => p.id === 'style-magnate');
   
   useEffect(() => {
@@ -21,12 +20,16 @@ const StyleMagnate = () => {
         
         {/* Background Image with Cinematic Filter */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-          <img 
-            src={project?.image} 
-            alt="Style Magnate" 
-            className="cinematic-filter"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
+          {project?.image ? (
+            <img 
+              src={project.image} 
+              alt="Style Magnate show background" 
+              className="cinematic-filter"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            <div style={{ width: '100%', height: '100%', backgroundColor: '#1a1a1a' }} aria-label="Style Magnate background" />
+          )}
           {/* Gradients for text readability */}
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, var(--bg-primary) 0%, rgba(13,13,13,0.7) 50%, transparent 100%)' }} />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--bg-primary) 0%, transparent 50%)' }} />
@@ -132,6 +135,7 @@ const StyleMagnate = () => {
           muted 
           loop 
           playsInline
+          aria-label="Style Magnate show teaser video"
           style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }}
         >
           <source src={tutorialVideos.mainView.src} type="video/mp4" />

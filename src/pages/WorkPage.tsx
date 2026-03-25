@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import ScrollFadeIn from '../components/ScrollFadeIn';
@@ -19,6 +19,23 @@ const WorkPage = () => {
   const filteredItems = activeFilter === 'All' 
     ? portfolioItems 
     : portfolioItems.filter(item => item.category === activeFilter);
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape' && selectedItem) {
+      setSelectedItem(null);
+    }
+  }, [selectedItem]);
+
+  useEffect(() => {
+    if (selectedItem) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [selectedItem, handleKeyDown]);
 
   return (
     <main className="app-container" style={{ paddingTop: '8rem', backgroundColor: 'var(--bg-primary)', minHeight: '100vh' }}>
@@ -108,6 +125,7 @@ const WorkPage = () => {
                     muted 
                     loop 
                     playsInline
+                    aria-label={`${item.title} video preview`}
                     className="cinematic-filter"
                     style={{
                       width: '100%',
@@ -186,6 +204,9 @@ const WorkPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${selectedItem.title} details`}
             style={{
               position: 'fixed',
               inset: 0,
@@ -199,6 +220,7 @@ const WorkPage = () => {
             <button 
               className="cursor-hover"
               onClick={() => setSelectedItem(null)}
+              aria-label="Close modal"
               style={{
                 position: 'fixed',
                 top: '2rem',
@@ -209,7 +231,8 @@ const WorkPage = () => {
                 fontSize: '1rem',
                 letterSpacing: '0.2em',
                 textTransform: 'uppercase',
-                zIndex: 10000
+                zIndex: 10000,
+                cursor: 'pointer'
               }}
             >
               Close ✕
@@ -224,6 +247,7 @@ const WorkPage = () => {
                     controls 
                     autoPlay 
                     src={selectedItem.video} 
+                    aria-label={`${selectedItem.title} full video`}
                     style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
                   />
                 ) : (

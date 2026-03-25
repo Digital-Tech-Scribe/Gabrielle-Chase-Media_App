@@ -36,12 +36,13 @@ const Hero = () => {
           muted
           loop
           playsInline
+          aria-label="Featured art direction showcase video"
           className="cinematic-filter"
           style={{
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            opacity: 0.6 // Dark overlay effect
+            opacity: 0.6
           }}
         >
           <source src={videoSrc} type="video/mp4" />
