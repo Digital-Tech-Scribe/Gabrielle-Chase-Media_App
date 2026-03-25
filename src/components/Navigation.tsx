@@ -16,8 +16,8 @@ const Navigation = () => {
   const [isMenuAnimComplete, setIsMenuAnimComplete] = useState(false);
 
   const { scrollY } = useScroll();
-  const headerOpacity = useTransform(scrollY, [0, 300], [1, 0]);
-  const headerY = useTransform(scrollY, [0, 300], [0, -50]);
+  const headerOpacity = useTransform(scrollY, [0, 1000], [1, 0]);
+  const headerY = useTransform(scrollY, [0, 1000], [0, -25]);
 
   const closeMenu = useCallback(() => {
     setIsOpen(false);
