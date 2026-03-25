@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { logoLight } from '../assets/data';
 
@@ -14,6 +14,10 @@ const navItems = [
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMenuAnimComplete, setIsMenuAnimComplete] = useState(false);
+
+  const { scrollY } = useScroll();
+  const headerOpacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const headerY = useTransform(scrollY, [0, 300], [0, -50]);
 
   const closeMenu = useCallback(() => {
     setIsOpen(false);
@@ -52,7 +56,7 @@ const Navigation = () => {
 
   return (
     <>
-      {/* Top Navbar */}
+      {/* Top Navbar - Fades out on scroll */}
       <motion.nav 
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -69,7 +73,9 @@ const Navigation = () => {
           zIndex: 100,
           mixBlendMode: 'difference',
           color: '#fff',
-          fontFamily: '"DM Sans", sans-serif'
+          fontFamily: '"DM Sans", sans-serif',
+          opacity: headerOpacity,
+          y: headerY,
         }}
       >
         <div style={{ flex: 1, fontSize: '1.1rem', letterSpacing: '0.05em', fontWeight: 500 }}>
