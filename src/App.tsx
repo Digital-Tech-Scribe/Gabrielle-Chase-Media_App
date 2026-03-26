@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Global Components
 import Navigation from './components/Navigation';
@@ -37,35 +37,43 @@ function App() {
     <>
       <CustomCursor />
       
-      {loading ? (
-        <Loader onComplete={handleLoadingComplete} />
-      ) : (
-        <div className="app-container">
-          <Navigation />
-          
-          <AnimatePresence mode="wait">
-            <Routes location={location} key={location.pathname}>
-              {/* Primary Pages */}
-              <Route path="/" element={<PageTransition><HomePage /></PageTransition>} />
-              <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} />
-              <Route path="/services" element={<PageTransition><ServicesPage /></PageTransition>} />
-              <Route path="/work" element={<PageTransition><WorkPage /></PageTransition>} />
-              
-              {/* Specialized Pages */}
-              <Route path="/film-tv" element={<PageTransition><FilmTVPage /></PageTransition>} />
-              <Route path="/style-magnate" element={<PageTransition><StyleMagnate /></PageTransition>} />
-              
-              {/* Utility Pages */}
-              <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
-              
-              {/* Catch-all redirect to Home */}
-              <Route path="*" element={<PageTransition><HomePage /></PageTransition>} />
-            </Routes>
-          </AnimatePresence>
-          
-          <Footer />
-        </div>
-      )}
+      <AnimatePresence>
+        {loading ? (
+          <Loader key="loader" onComplete={handleLoadingComplete} />
+        ) : (
+          <motion.div 
+            key="main-app"
+            className="app-container"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Navigation />
+            
+            <AnimatePresence mode="wait">
+              <Routes location={location} key={location.pathname}>
+                {/* Primary Pages */}
+                <Route path="/" element={<PageTransition><HomePage /></PageTransition>} />
+                <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} />
+                <Route path="/services" element={<PageTransition><ServicesPage /></PageTransition>} />
+                <Route path="/work" element={<PageTransition><WorkPage /></PageTransition>} />
+                
+                {/* Specialized Pages */}
+                <Route path="/film-tv" element={<PageTransition><FilmTVPage /></PageTransition>} />
+                <Route path="/style-magnate" element={<PageTransition><StyleMagnate /></PageTransition>} />
+                
+                {/* Utility Pages */}
+                <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
+                
+                {/* Catch-all redirect to Home */}
+                <Route path="*" element={<PageTransition><HomePage /></PageTransition>} />
+              </Routes>
+            </AnimatePresence>
+            
+            <Footer />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

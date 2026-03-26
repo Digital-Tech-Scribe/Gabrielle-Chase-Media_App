@@ -20,7 +20,7 @@ const FilmTVPage = () => {
       {/* Absolute intro */}
       <div style={{
         position: 'absolute',
-        top: '10rem',
+        top: '8rem',
         left: '4rem',
         zIndex: 10,
         pointerEvents: 'none'

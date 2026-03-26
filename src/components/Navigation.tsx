@@ -11,13 +11,27 @@ const navItems = [
   { name: 'Contact', path: '/contact' }
 ];
 
+const locations = [
+  'Lagos, Nigeria',
+  'Toronto, United States',
+  'London, UK'
+];
+
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMenuAnimComplete, setIsMenuAnimComplete] = useState(false);
+  const [locationIndex, setLocationIndex] = useState(0);
 
   const { scrollY } = useScroll();
-  const headerOpacity = useTransform(scrollY, [0, 1000], [1, 0]);
-  const headerY = useTransform(scrollY, [0, 1000], [0, -25]);
+  const headerOpacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const headerY = useTransform(scrollY, [0, 400], [0, -25]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLocationIndex((prev) => (prev + 1) % locations.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
 
   const closeMenu = useCallback(() => {
     setIsOpen(false);
@@ -69,17 +83,47 @@ const Navigation = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '2rem 4rem',
+          padding: '2rem 5rem',
           zIndex: 100,
-          mixBlendMode: 'difference',
           color: '#fff',
           fontFamily: '"DM Sans", sans-serif',
           opacity: headerOpacity,
           y: headerY,
         }}
       >
-        <div style={{ flex: 1, fontSize: '1.1rem', letterSpacing: '0.05em', fontWeight: 500 }}>
-          Lagos, Nigeria
+        <div style={{ 
+          flex: 1, 
+          fontSize: '0.85rem', 
+          letterSpacing: '0.05em', 
+          fontWeight: 600,
+          display: 'flex',
+          justifyContent: 'flex-start'
+        }}>
+          <div style={{
+            backgroundColor: 'rgba(13, 13, 13, 0.4)',
+            backdropFilter: 'blur(10px)',
+            padding: '0.6rem 1.2rem',
+            borderRadius: '8px',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            height: '3rem',
+            display: 'flex',
+            alignItems: 'center',
+            overflow: 'hidden',
+            minWidth: '160px'
+          }}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={locations[locationIndex]}
+                initial={{ y: 15, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -15, opacity: 0 }}
+                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                style={{ whiteSpace: 'nowrap', width: '100%', textTransform: 'uppercase', fontSize: '0.95rem' }}
+              >
+                {locations[locationIndex]}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
         
         <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -88,17 +132,32 @@ const Navigation = () => {
               src={logoLight} 
               alt="Gabrielle Chase Media" 
               style={{ 
-                height: '160px', 
+                height: '180px', 
                 objectFit: 'contain'
               }} 
             />
           </Link>
         </div>
 
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', fontSize: '1.1rem', letterSpacing: '0.05em', fontWeight: 500 }}>
-          <a href="mailto:info@gabriellechasemedia.com" style={{ color: 'inherit', textDecoration: 'none' }}>
-            info@gabriellechasemedia.com
-          </a>
+        <div style={{ 
+          flex: 1, 
+          display: 'flex', 
+          justifyContent: 'flex-end', 
+          fontSize: '0.95rem', 
+          letterSpacing: '0.05em', 
+          fontWeight: 600 
+        }}>
+          <div style={{
+            backgroundColor: 'rgba(13, 13, 13, 0.4)',
+            backdropFilter: 'blur(10px)',
+            padding: '0.8rem 1.5rem',
+            borderRadius: '8px',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+          }}>
+            <a href="mailto:info@gabriellechasemedia.com" style={{ color: 'inherit', textDecoration: 'none' }}>
+              info@gabriellechasemedia.com
+            </a>
+          </div>
         </div>
       </motion.nav>
 
@@ -106,7 +165,7 @@ const Navigation = () => {
       <div 
         style={{
           position: 'fixed',
-          bottom: '2rem',
+          bottom: '12vh',
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',

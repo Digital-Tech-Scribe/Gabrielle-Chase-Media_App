@@ -23,16 +23,14 @@ const ArtDirScroll = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Container Height 200vh with "start start, end start" offset means:
-  // 0.0 is at scroll 0 (top of viewport)
-  // 1.0 is at scroll 200vh (bottom of container at top of viewport)
-  // So at 1.0, the next section (starting at 200vh) is at Y=0. PERFECT.
+  // We only use scroll progress to fade out the Hero Text natively as it scrolls up
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
   });
 
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 80, damping: 40, restDelta: 0.001 });
+  const heroContentOpacity = useTransform(smoothProgress, [0, 0.8], [1, 0]);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -47,29 +45,26 @@ const ArtDirScroll = () => {
   
   const handleMouseLeave = () => { mouseX.set(0); mouseY.set(0); };
 
-  // Smooth continuous zoom-in focus
-  const gridScale = useTransform(smoothProgress, [0, 0.2, 0.8, 1], [0.55, 1, 1, 6]);
+  // Static hero composition values for the 3D grid
+  const gridScale = 0.95;
+  const gridRotation = -12;
+  const gridSkew = -8;
+  const peripheralOpacity = 0.35;
   
-  // Slanty rotation and skew: consistent through reveal, straightens at the zoom-in focus end
-  const gridRotation = useTransform(smoothProgress, [0, 0.9, 1], [-12, -12, 0]);
-  const gridSkew = useTransform(smoothProgress, [0, 0.9, 1], [-8, -8, 0]);
+  // Mouse parallax
+  const mouseOffsetX = useTransform(() => smoothMouseX.get() * -8);
+  const mouseOffsetY = useTransform(() => smoothMouseY.get() * -8);
   
-  // Opacity: Center focus image ALWAYS 1.0, others reveal then fade as focus image expands
-  const peripheralOpacity = useTransform(smoothProgress, [0, 0.1, 0.8, 1], [0.35, 1, 1, 0]);
-  const heroContentOpacity = useTransform(smoothProgress, [0, 0.2], [1, 0]);
-
-  // interactivity Intensity: centered 'reveal' phase interaction
-  const interactivityIntensity = useTransform(smoothProgress, [0.1, 0.2, 0.75, 0.85], [0, 1, 1, 0]);
-  
-  const mouseOffsetX = useTransform(() => smoothMouseX.get() * -8 * interactivityIntensity.get());
-  const mouseOffsetY = useTransform(() => smoothMouseY.get() * -8 * interactivityIntensity.get());
+  // Shift the grid just slightly down globally
+  const totalY = useTransform(() => mouseOffsetY.get() + 5);
   
   const currentX = useMotionTemplate`${mouseOffsetX}vw`;
-  const currentY = useMotionTemplate`${mouseOffsetY}vh`;
+  const currentY = useMotionTemplate`${totalY}vh`;
 
-  const rowOffset0 = useTransform(smoothProgress, [0.3, 0.75], [baseRowOffsets[0], '0vw']);
-  const rowOffset1 = useTransform(smoothProgress, [0.3, 0.75], [baseRowOffsets[1], '0vw']);
-  const rowOffset2 = useTransform(smoothProgress, [0.3, 0.75], [baseRowOffsets[2], '0vw']);
+  // Static offsets instead of scroll-based
+  const rowOffset0 = baseRowOffsets[0];
+  const rowOffset1 = baseRowOffsets[1];
+  const rowOffset2 = baseRowOffsets[2];
   const dynamicRowOffsets = [rowOffset0, rowOffset1, rowOffset2];
 
   // Map filmTvProjects into the grid cells
@@ -92,6 +87,7 @@ const ArtDirScroll = () => {
       >
         <div style={{ pointerEvents: 'auto', textAlign: 'center' }}>
           <motion.h1 
+            layoutId="main-hero-title"
             style={{ 
               fontSize: 'clamp(3.5rem, 10vw, 8rem)', fontWeight: 700, lineHeight: 0.9, 
               color: '#fff', textTransform: 'uppercase', letterSpacing: '-0.03em' 
@@ -106,14 +102,14 @@ const ArtDirScroll = () => {
         </div>
       </motion.div>
 
-      {/* 2. THE INTERACTIVE GRID */}
+      {/* 2. THE INTERACTIVE GRID - NOW A STANDARD HERO SECTION */}
       <div 
         ref={containerRef} 
-        style={{ position: 'relative', zIndex: 10, backgroundColor: '#050505', height: '140vh', width: '100vw' }}
+        style={{ position: 'relative', zIndex: 10, backgroundColor: '#050505', height: '100vh', width: '100vw', overflow: 'hidden' }}
       >
         <div 
           style={{ 
-            position: 'sticky', top: 0, height: '100vh', width: '100vw', overflow: 'hidden', 
+            position: 'absolute', top: 0, height: '100vh', width: '100vw', 
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             perspective: '1200px' 
           }}

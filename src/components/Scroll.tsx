@@ -17,7 +17,7 @@ const ArtDirScroll = () => {
 
   // The grid transforms from 3D floating to flat screen over the first 250px
   const rawProgress = useTransform(scrollY, [0, 250], [0, 1]);
-  const progress = useSpring(rawProgress, { stiffness: 60, damping: 20 });
+  const progress = useSpring(rawProgress, { stiffness: 60, damping: 20, restDelta: 0.0001, restSpeed: 0.0001 });
 
   // 3D Rotations collapsing to 0 degrees for a perfect flat rectangle structure
   const rotateX = useTransform(progress, [0, 1], ['25deg', '0deg']);
@@ -28,8 +28,8 @@ const ArtDirScroll = () => {
   // Parallax constraints (subtle interactive panning)
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const smoothMouseX = useSpring(mouseX, { stiffness: 40, damping: 20 });
-  const smoothMouseY = useSpring(mouseY, { stiffness: 40, damping: 20 });
+  const smoothMouseX = useSpring(mouseX, { stiffness: 40, damping: 20, restDelta: 0.0001, restSpeed: 0.0001 });
+  const smoothMouseY = useSpring(mouseY, { stiffness: 40, damping: 20, restDelta: 0.0001, restSpeed: 0.0001 });
   
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDesktop) return;
@@ -59,7 +59,7 @@ const ArtDirScroll = () => {
   ].map(row => row.filter(Boolean));
 
   // Hero text fades out smoothly immediately upon scrolling
-  const heroOpacity = useTransform(scrollY, [0, 150], [1, 0]);
+  const heroOpacity = useTransform(scrollY, [0, 100], [1, 0]);
   const heroY = useTransform(scrollY, [0, 150], ['0px', '-50px']);
 
   return (
@@ -98,11 +98,12 @@ const ArtDirScroll = () => {
             rotateX, rotateY, rotateZ, z: zPosition,
             x: currentX, y: currentY,
             transformStyle: 'preserve-3d',
-            width: '90vw', maxWidth: '1400px'
+            width: '90vw', maxWidth: '1400px',
+            willChange: 'transform',
           }}
         >
           {matrix.map((row, rowIndex) => (
-            <motion.div key={rowIndex} style={{ display: 'flex', gap: '3vw', x: dynamicRowOffsets[rowIndex], width: '100%' }}>
+            <motion.div key={rowIndex} style={{ display: 'flex', gap: '3vw', x: dynamicRowOffsets[rowIndex], width: '100%', transformStyle: 'preserve-3d' }}>
               {row.map((item) => {
                 if (!item) return null;
                 
@@ -125,26 +126,27 @@ const ArtDirScroll = () => {
                 return (
                   <motion.div
                     key={item.id}
-                    layout // allows smooth reflow adjustments
                     initial={{ flex: 1 }}
                     whileHover={isDesktop ? { flex: 1.5 } : {}}
                     transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                     style={{
                       position: 'relative', overflow: 'hidden', borderRadius: '16px', backgroundColor: '#111',
-                      height, marginTop, cursor: 'crosshair', boxShadow: '0 30px 60px rgba(0,0,0,0.5)'
+                      height, marginTop, cursor: 'crosshair', boxShadow: '0 30px 60px rgba(0,0,0,0.5)',
+                      willChange: 'transform',
+                      WebkitFontSmoothing: 'antialiased',
                     }}
                   >
                     {item.video ? (
                       <motion.video 
                         src={item.video} autoPlay loop muted playsInline 
                         aria-label={`${item.title} background video`}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.7)' }} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.7)', willChange: 'transform' }} 
                         whileHover={{ scale: 1.05, filter: 'brightness(1.1)', transition: { duration: 0.6 } }} 
                       />
                     ) : (
                       <motion.img 
                         src={item.image} alt={item.title} 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.7)' }} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.7)', willChange: 'transform' }} 
                         whileHover={{ scale: 1.05, filter: 'brightness(1.1)', transition: { duration: 0.6 } }} 
                       />
                     )}

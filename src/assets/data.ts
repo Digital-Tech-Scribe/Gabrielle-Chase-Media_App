@@ -27,6 +27,16 @@ import awardsStudents2Portrait from '../../GRABIELLE-MEDIA/awards-to-students2_p
 
 // Crew photo
 import crewLandscape from '../../GRABIELLE-MEDIA/crew_landscape.jpg';
+import hotfmLagosPortrait from '../../GRABIELLE-MEDIA/Speaking today with the good people at hotfm_lagos on everything about birthing and creating th 2_upscayl_1x_upscayl-standard-4x.webp';
+
+// Founder / Awards photo imported newly
+import abisolaAwardPortrait from './abisola-award.webp';
+
+// About Page Hero Image
+import aboutHeroPortrait from '../../GRABIELLE-MEDIA/Speaking today with the good people at hotfm_lagos on everything about birthing and creating th 2_upscayl_1x_upscayl-standard-4x copy.webp';
+
+// Team placeholders
+import teamPlaceholderPortrait from '../../GRABIELLE-MEDIA/Clear road for the queen of designs!Make way for the extraordinary production designer and art .webp';
 
 // Movie preview
 import moviePreviewPortrait from '../../GRABIELLE-MEDIA/movie-preview_portrait.webp';
@@ -67,7 +77,7 @@ import videoMovie3 from '../../GRABIELLE-MEDIA/our-movie3_landscape.mp4';
 import logoLight from './GCM-logo_light.png';
 import logoDark from './GCM-logo_dark.png';
 
-export { logoLight, logoDark };
+export { logoLight, logoDark, aboutHeroPortrait, abisolaAwardPortrait };
 
 // ============================================================
 // TYPE DEFINITIONS
@@ -137,7 +147,7 @@ export const loaderImages: string[] = [
   tutorialPreview5Landscape,
   moviePreviewPortrait,
   tutorialPreview3Landscape,
-  crewLandscape,
+  hotfmLagosPortrait,
 ];
 
 // ============================================================
@@ -345,8 +355,8 @@ export const filmTvProjects: FilmProject[] = [
 export const portfolioItems: PortfolioItem[] = [
   {
     id: 'p1',
-    title: "House of Ga'a — Set Design",
-    category: 'Set Design',
+    title: "House of Ga'a — Art Direction",
+    category: 'Film & TV',
     year: '2024',
     role: 'Art Director',
     platform: 'Netflix',
@@ -356,14 +366,14 @@ export const portfolioItems: PortfolioItem[] = [
   },
   {
     id: 'p2',
-    title: 'Blood Sisters — Art Direction',
-    category: 'Film & TV',
-    year: '2022',
+    title: 'The Herd — Production Design',
+    category: 'Set Design',
+    year: '2024',
     role: 'Art Director',
     platform: 'Netflix',
-    image: tutorialPreview3Landscape,
+    image: tutorialPreview10Landscape,
     aspect: 'landscape',
-    video: videoSceneCreated,
+    video: videoTheHerd,
   },
   {
     id: 'p6',
@@ -456,17 +466,17 @@ export const teamMembers: TeamMember[] = [
   {
     name: 'Abisola Omolade',
     role: 'Founder & CEO',
-    image: awardsStudents1Portrait,
+    image: teamPlaceholderPortrait,
   },
   {
     name: 'Gbemileke Peters',
-    role: 'Lead Cinematographer',
-    image: crewLandscape,
+    role: 'Creative Director',
+    image: teamPlaceholderPortrait,
   },
   {
     name: 'Samantha Myers',
     role: 'Event Curator',
-    image: awardsStudents2Portrait,
+    image: teamPlaceholderPortrait,
   },
 ];
 
@@ -479,11 +489,11 @@ export const milestones: Milestone[] = [
   { year: '2017', title: 'Founded Gabrielle Chase Media', description: 'Lagos, Nigeria' },
   { year: '2020', title: "Art Director: HBO's Eyimofe", description: 'International co-production' },
   { year: '2022', title: "Art Director: Netflix's Blood Sisters", description: 'First Nigerian Netflix Original Series' },
+  { year: '2023', title: 'Hilda Baci Guinness World Record', description: 'Art Direction for the event' },
   { year: '2024', title: "Art Director: House of GA'A", description: 'Epic Nollywood period film' },
   { year: '2024', title: 'AMVCA10 Winner', description: 'Best Art Director' },
   { year: '2024', title: 'Executive Producer: Style Magnate', description: 'Showmax fashion competition' },
   { year: '2025', title: 'AMVCA11 Nominated', description: 'Best Unscripted Series' },
-  { year: '2023', title: 'Hilda Baci Guinness World Record', description: 'Art Direction for the event' },
 ];
 
 // ============================================================
@@ -491,20 +501,20 @@ export const milestones: Milestone[] = [
 // ============================================================
 export const awards: AwardEntry[] = [
   {
-    id: 'a1',
-    title: 'AMVCA10 — Winner',
-    category: 'Best Art Director',
-    project: "House of GA'A",
-    platform: 'Netflix',
-    year: '2024',
-  },
-  {
     id: 'a2',
     title: 'AMVCA11 — Nominated',
     category: 'Best Unscripted Series',
     project: 'Style Magnate',
     platform: 'Showmax',
     year: '2025',
+  },
+  {
+    id: 'a1',
+    title: 'AMVCA10 — Winner',
+    category: 'Best Art Director',
+    project: "House of GA'A",
+    platform: 'Netflix',
+    year: '2024',
   },
   {
     id: 'a3',

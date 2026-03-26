@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import PageTransition from '../components/PageTransition';
 import ArtDirScroll from '../components/ArtDirScroll';
-import { services, portfolioItems, teamMembers } from '../assets/data';
+import { services, portfolioItems, abisolaAwardPortrait } from '../assets/data';
 
 const HomePage = () => {
   return (
@@ -15,11 +15,10 @@ const HomePage = () => {
         {/* Normal scrolling content below */}
         <div style={{ position: 'relative', backgroundColor: '#050505' }}>
           
-          {/* 2. FEATURED WORK SECTION (Directly after reveal) */}
           <section id="works" style={{ 
             padding: '4rem 4rem 8rem', 
             backgroundColor: '#050505',
-            marginTop: '-40vh',
+            marginTop: '0',
             position: 'relative',
             zIndex: 20
           }}>
@@ -203,8 +202,8 @@ const HomePage = () => {
                 transition={{ duration: 0.8 }}
                 style={{ flex: '1 1 500px', position: 'relative' }}
               >
-                <img src={teamMembers[0].image} alt="Abisola Omolade" style={{ width: '100%', aspectRatio: '4/5', objectFit: 'cover', borderRadius: '8px', filter: 'contrast(1.1) brightness(0.9)' }} />
-                <div style={{ position: 'absolute', bottom: '-2rem', right: '-2rem', width: '60%', height: '60%', border: '1px solid var(--accent)', borderRadius: '8px', zIndex: -1 }} />
+                <img src={abisolaAwardPortrait} alt="Abisola Omolade" style={{ width: '100%', height: 'auto', borderRadius: '8px', filter: 'contrast(1.1) brightness(0.9)' }} />
+                <div style={{ position: 'absolute', bottom: '-1.5rem', right: '-1.5rem', width: '60%', height: '60%', border: '1px solid var(--accent)', borderRadius: '8px', zIndex: -1 }} />
               </motion.div>
 
               {/* Right: Story */}

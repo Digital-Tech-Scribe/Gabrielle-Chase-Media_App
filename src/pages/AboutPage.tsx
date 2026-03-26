@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import ScrollFadeIn from '../components/ScrollFadeIn';
-import { teamMembers, milestones, logoLight, awards } from '../assets/data';
+import { teamMembers, milestones, logoLight, awards, aboutHeroPortrait } from '../assets/data';
 
 const AboutPage = () => {
   const navigate = useNavigate();
@@ -36,14 +36,14 @@ const AboutPage = () => {
       </section>
 
       {/* 2. Full Width Editorial Hero Image */}
-      <section style={{ width: '100%', height: '70vh', minHeight: '500px', position: 'relative' }}>
+      <section style={{ width: '100%', height: '70vh', minHeight: '500px', position: 'relative', backgroundColor: '#050505' }}>
         <img 
-          src={teamMembers[0].image} 
+          src={aboutHeroPortrait} 
           alt="Abisola Omolade" 
           className="cinematic-filter"
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          style={{ width: '100%', height: '100%', objectFit: 'contain', paddingBottom: '2rem' }}
         />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--bg-primary) 0%, transparent 40%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--bg-primary) 0%, transparent 40%)', pointerEvents: 'none' }} />
         <div className="container" style={{ position: 'absolute', bottom: '2rem', left: 0, right: 0 }}>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '0.2rem' }}>Abisola Abolaji Omolade</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Founder / Art Director</p>
