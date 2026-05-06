@@ -1,9 +1,18 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { logoLight } from '../assets/data';
 import { Smartphone, Mail, Instagram } from 'lucide-react';
 
 const Footer = () => {
   const location = useLocation();
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth > 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleNavClick = (path: string) => {
     if (location.pathname === path) {
@@ -21,13 +30,13 @@ const Footer = () => {
     <footer style={{
       backgroundColor: '#050505',
       color: '#fff',
-      padding: '6rem 2rem 2rem',
+      padding: isDesktop ? '6rem 2rem 2rem' : '3rem 1.25rem 1.5rem',
       marginTop: 'auto',
       fontFamily: '"DM Sans", sans-serif',
       position: 'relative',
       overflow: 'hidden'
     }}>
-      {/* Decorative sophisticated gradient */}
+      {/* Decorative gradient */}
       <div style={{
         position: 'absolute',
         top: 0,
@@ -41,19 +50,19 @@ const Footer = () => {
         maxWidth: '1400px',
         margin: '0 auto',
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-        gap: '4rem',
-        marginBottom: '6rem'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+        gap: isDesktop ? '4rem' : '2.5rem',
+        marginBottom: isDesktop ? '6rem' : '3rem'
       }}>
         
         {/* Left Column - Brand */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: isDesktop ? '2rem' : '1.5rem' }}>
           <Link to="/" onClick={handleLogoClick} style={{ display: 'inline-block', width: 'fit-content', transition: 'transform 0.3s ease' }} className="hover-scale">
-            <img src={logoLight} alt="Gabrielle Chase Media" style={{ height: '110px', width: 'auto', opacity: 0.9 }} />
+            <img src={logoLight} alt="Gabrielle Chase Media" style={{ height: isDesktop ? '110px' : '70px', width: 'auto', opacity: 0.9 }} />
           </Link>
           <p style={{ 
             color: 'var(--text-muted)', 
-            fontSize: '1.05rem',
+            fontSize: isDesktop ? '1.05rem' : '0.9rem',
             maxWidth: '320px',
             lineHeight: 1.7,
             letterSpacing: '0.02em',
@@ -88,7 +97,7 @@ const Footer = () => {
               onClick={() => handleNavClick(item.path)}
               style={{
                 color: 'var(--text-muted)',
-                fontSize: '1.05rem',
+                fontSize: isDesktop ? '1.05rem' : '0.95rem',
                 textDecoration: 'none',
                 width: 'fit-content',
                 display: 'flex',
@@ -116,13 +125,12 @@ const Footer = () => {
             Connect
           </h4>
 
-          {/* Phone / iPhone Icon */}
           <a 
             href="tel:+234000000000"
             className="footer-contact-item"
             style={{
               color: 'var(--text-muted)',
-              fontSize: '1.05rem',
+              fontSize: isDesktop ? '1.05rem' : '0.95rem',
               display: 'flex',
               alignItems: 'center',
               gap: '1rem',
@@ -133,13 +141,12 @@ const Footer = () => {
             Mobile Contact
           </a>
 
-          {/* Email Icon */}
           <a 
             href="mailto:info@gabriellechasemedia.com"
             className="footer-contact-item"
             style={{
               color: 'var(--text-muted)',
-              fontSize: '1.05rem',
+              fontSize: isDesktop ? '1.05rem' : '0.95rem',
               display: 'flex',
               alignItems: 'center',
               gap: '1rem',
@@ -147,10 +154,9 @@ const Footer = () => {
             }}
           >
             <Mail size={18} color="var(--accent)" strokeWidth={1.5} />
-            info@gabriellechasemedia.com
+            {isDesktop ? 'info@gabriellechasemedia.com' : 'Email Us'}
           </a>
 
-          {/* Instagram Link */}
           <a 
             href="https://www.instagram.com/gabriellechasemedia" 
             target="_blank" 
@@ -158,7 +164,7 @@ const Footer = () => {
             className="footer-contact-item"
             style={{
               color: 'var(--text-muted)',
-              fontSize: '1.05rem',
+              fontSize: isDesktop ? '1.05rem' : '0.95rem',
               display: 'flex',
               alignItems: 'center',
               gap: '1rem',
@@ -175,18 +181,19 @@ const Footer = () => {
       <div style={{
         maxWidth: '1400px',
         margin: '0 auto',
-        paddingTop: '2.5rem',
+        paddingTop: isDesktop ? '2.5rem' : '1.5rem',
         borderTop: '1px solid rgba(255,255,255,0.05)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
-        gap: '1rem'
+        gap: '1rem',
+        flexDirection: isDesktop ? 'row' : 'column',
       }}>
-        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: isDesktop ? '0.85rem' : '0.75rem', letterSpacing: '0.05em', textAlign: isDesktop ? 'left' : 'center' }}>
           © {new Date().getFullYear()} GABRIELLE CHASE MEDIA. ALL RIGHTS RESERVED.
         </p>
-        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: isDesktop ? '0.85rem' : '0.75rem', letterSpacing: '0.05em', textAlign: isDesktop ? 'right' : 'center' }}>
           WEBSITE DESIGNED AND BUILT BY{' '}
           <a 
             href="https://digitaltechscribe.com" 

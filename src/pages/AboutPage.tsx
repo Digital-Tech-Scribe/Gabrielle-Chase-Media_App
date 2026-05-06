@@ -1,29 +1,33 @@
-import { useEffect } from 'react';
-
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ScrollFadeIn from '../components/ScrollFadeIn';
 import { teamMembers, milestones, logoLight, awards, aboutHeroPortrait } from '../assets/data';
 
 const AboutPage = () => {
   const navigate = useNavigate();
+  const [isDesktop, setIsDesktop] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    const handleResize = () => setIsDesktop(window.innerWidth > 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
-    <main className="app-container" style={{ paddingTop: '8rem', backgroundColor: 'var(--bg-primary)' }}>
+    <main className="app-container section-dark" style={{ paddingTop: isDesktop ? '8rem' : '6rem' }}>
       {/* 1. Hero Teaser Section */}
       <section className="section" style={{ paddingBottom: '4rem' }}>
         <div className="container">
           <ScrollFadeIn>
-            <h1 style={{ marginBottom: '2rem', maxWidth: '800px', fontSize: 'clamp(3rem, 6vw, 6rem)' }}>
+            <h1 style={{ marginBottom: '2rem', maxWidth: '800px', fontSize: 'clamp(2.5rem, 6vw, 6rem)' }}>
               Built for the <br />
               <span className="text-gold">cinematic eye.</span>
             </h1>
             <p style={{ 
               color: 'var(--text-muted)', 
-              fontSize: 'clamp(1.1rem, 2vw, 1.4rem)', 
+              fontSize: 'clamp(1rem, 2vw, 1.4rem)', 
               maxWidth: '600px',
               fontFamily: 'var(--font-heading)',
               letterSpacing: '0.02em',
@@ -36,23 +40,23 @@ const AboutPage = () => {
       </section>
 
       {/* 2. Full Width Editorial Hero Image */}
-      <section style={{ width: '100%', height: '70vh', minHeight: '500px', position: 'relative', backgroundColor: '#050505' }}>
+      <section style={{ width: '100%', height: isDesktop ? '70vh' : '50vh', minHeight: isDesktop ? '500px' : '350px', position: 'relative', backgroundColor: '#050505' }}>
         <img 
           src={aboutHeroPortrait} 
           alt="Abisola Omolade" 
           className="cinematic-filter"
           style={{ width: '100%', height: '100%', objectFit: 'contain', paddingBottom: '2rem' }}
         />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--bg-primary) 0%, transparent 40%)', pointerEvents: 'none' }} />
+        <div className="gradient-fade-top" />
         <div className="container" style={{ position: 'absolute', bottom: '2rem', left: 0, right: 0 }}>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '0.2rem' }}>Abisola Abolaji Omolade</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Founder / Art Director</p>
+          <h2 style={{ fontSize: isDesktop ? '1.5rem' : '1.2rem', marginBottom: '0.2rem' }}>Abisola Abolaji Omolade</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: isDesktop ? '0.9rem' : '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Founder / Art Director</p>
         </div>
       </section>
 
       {/* 3. Our Story & Timeline */}
       <section className="section">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '6rem' }}>
+        <div className="container" style={{ display: 'grid', gridTemplateColumns: isDesktop ? 'repeat(auto-fit, minmax(300px, 1fr))' : '1fr', gap: isDesktop ? '6rem' : '3rem' }}>
           
           <ScrollFadeIn>
             <h3 style={{ color: 'var(--accent)', fontSize: '0.85rem', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '1.5rem' }}>
@@ -74,7 +78,7 @@ const AboutPage = () => {
           <ScrollFadeIn delay={0.2}>
             <div style={{ position: 'relative', paddingLeft: '2rem', borderLeft: '1px solid var(--border)' }}>
               {milestones.map((milestone, i) => (
-                <div key={i} style={{ marginBottom: i === milestones.length - 1 ? 0 : '3rem', position: 'relative' }}>
+                <div key={i} style={{ marginBottom: i === milestones.length - 1 ? 0 : isDesktop ? '3rem' : '2rem', position: 'relative' }}>
                   <div style={{
                     position: 'absolute',
                     left: '-2.35rem',
@@ -101,7 +105,7 @@ const AboutPage = () => {
       {/* 4. The Vision Quote Block */}
       <section style={{ 
         backgroundColor: 'var(--bg-tertiary)', 
-        padding: '8rem 0',
+        padding: isDesktop ? '8rem 0' : '4rem 0',
         textAlign: 'center',
         borderTop: '1px solid var(--border)',
         borderBottom: '1px solid var(--border)'
@@ -116,7 +120,7 @@ const AboutPage = () => {
             <h2 style={{ 
               color: 'var(--accent)', 
               fontFamily: 'var(--font-heading)', 
-              fontSize: 'clamp(2rem, 4vw, 3.5rem)',
+              fontSize: 'clamp(1.8rem, 4vw, 3.5rem)',
               lineHeight: 1.3,
               maxWidth: '900px',
               margin: '0 auto'
@@ -127,11 +131,11 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* 5. Awards & Recognition (Merged from Press) */}
+      {/* 5. Awards & Recognition */}
       <section className="section" style={{ borderTop: '1px solid var(--border)' }}>
         <div className="container">
           <ScrollFadeIn>
-            <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: isDesktop ? '4rem' : '2.5rem' }}>
               <h3 style={{ color: 'var(--accent)', fontSize: '0.85rem', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '1rem' }}>
                 Recognition
               </h3>
@@ -142,38 +146,67 @@ const AboutPage = () => {
           <div style={{ borderTop: '1px solid var(--border)' }}>
             {awards.map((award, i) => (
               <ScrollFadeIn key={award.id} delay={i * 0.05}>
-                <div 
-                  className="cursor-hover"
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 3fr 2fr 1fr',
-                    gap: '2rem',
-                    padding: '2.5rem 0',
-                    borderBottom: '1px solid var(--border)',
-                    alignItems: 'center',
-                    transition: 'background-color 0.3s ease',
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                >
-                  <div style={{ color: 'var(--accent)', fontSize: '1.1rem', fontFamily: 'var(--font-heading)' }}>
-                    {award.year}
-                  </div>
-                  <div>
-                    <h3 style={{ fontSize: '1.3rem', marginBottom: '0.3rem', color: 'var(--text-primary)' }}>
-                      {award.title}
-                    </h3>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                      {award.category}
+                {isDesktop ? (
+                  /* Desktop: 4-column grid */
+                  <div 
+                    className="cursor-hover"
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 3fr 2fr 1fr',
+                      gap: '2rem',
+                      padding: '2.5rem 0',
+                      borderBottom: '1px solid var(--border)',
+                      alignItems: 'center',
+                      transition: 'background-color 0.3s ease',
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    <div style={{ color: 'var(--accent)', fontSize: '1.1rem', fontFamily: 'var(--font-heading)' }}>
+                      {award.year}
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: '1.3rem', marginBottom: '0.3rem', color: 'var(--text-primary)' }}>
+                        {award.title}
+                      </h3>
+                      <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                        {award.category}
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '1.1rem', fontFamily: 'var(--font-heading)', color: 'var(--text-primary)' }}>
+                      {award.project}
+                    </div>
+                    <div style={{ color: 'var(--text-subtle)', fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', textAlign: 'right' }}>
+                      {award.platform}
                     </div>
                   </div>
-                  <div style={{ fontSize: '1.1rem', fontFamily: 'var(--font-heading)', color: 'var(--text-primary)' }}>
-                    {award.project}
+                ) : (
+                  /* Mobile: stacked card */
+                  <div style={{
+                    padding: '1.5rem 0',
+                    borderBottom: '1px solid var(--border)',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                      <span style={{ color: 'var(--accent)', fontSize: '0.85rem', fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
+                        {award.year}
+                      </span>
+                      {award.platform && (
+                        <span style={{ color: 'var(--text-subtle)', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', opacity: 0.7 }}>
+                          {award.platform}
+                        </span>
+                      )}
+                    </div>
+                    <h3 style={{ fontSize: '1.1rem', marginBottom: '0.25rem', color: 'var(--text-primary)' }}>
+                      {award.title}
+                    </h3>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                      {award.category}
+                    </div>
+                    <div style={{ fontSize: '0.95rem', fontFamily: 'var(--font-heading)', color: 'var(--text-primary)', opacity: 0.8 }}>
+                      {award.project}
+                    </div>
                   </div>
-                  <div style={{ color: 'var(--text-subtle)', fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', textAlign: 'right' }}>
-                    {award.platform}
-                  </div>
-                </div>
+                )}
               </ScrollFadeIn>
             ))}
           </div>
@@ -184,7 +217,7 @@ const AboutPage = () => {
       <section className="section">
         <div className="container">
           <ScrollFadeIn>
-            <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: isDesktop ? '4rem' : '2.5rem' }}>
               <h3 style={{ color: 'var(--accent)', fontSize: '0.85rem', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '1rem' }}>
                 The Collective
               </h3>
@@ -192,7 +225,7 @@ const AboutPage = () => {
             </div>
           </ScrollFadeIn>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '3rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? 'repeat(auto-fit, minmax(280px, 1fr))' : '1fr', gap: isDesktop ? '3rem' : '2rem' }}>
             {teamMembers.map((member, i) => (
               <ScrollFadeIn key={member.name} delay={i * 0.1}>
                 <div style={{ width: '100%', aspectRatio: '3/4', marginBottom: '1.5rem', overflow: 'hidden' }}>
@@ -203,7 +236,7 @@ const AboutPage = () => {
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 </div>
-                <h3 style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>{member.name}</h3>
+                <h3 style={{ fontSize: isDesktop ? '1.5rem' : '1.3rem', marginBottom: '0.25rem' }}>{member.name}</h3>
                 <p style={{ color: 'var(--accent)', fontSize: '0.8rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                   {member.role}
                 </p>
@@ -213,20 +246,20 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* 6. As Seen On (Logo Strip text) */}
+      {/* 6. As Seen On */}
       <section className="section" style={{ backgroundColor: 'var(--bg-secondary)', borderTop: '1px solid var(--border)' }}>
         <div className="container" style={{ textAlign: 'center' }}>
-          <h3 style={{ color: 'var(--text-muted)', fontSize: '0.85rem', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '3rem' }}>
+          <h3 style={{ color: 'var(--text-muted)', fontSize: '0.85rem', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: isDesktop ? '3rem' : '2rem' }}>
             Trusted by the biggest platforms
           </h3>
           <div style={{ 
             display: 'flex', 
             justifyContent: 'center', 
-            gap: 'clamp(2rem, 6vw, 5rem)', 
+            gap: isDesktop ? 'clamp(2rem, 6vw, 5rem)' : '1.25rem',
             flexWrap: 'wrap',
             alignItems: 'center',
             fontFamily: 'var(--font-heading)',
-            fontSize: 'clamp(1.5rem, 3vw, 2.5rem)',
+            fontSize: isDesktop ? 'clamp(1.5rem, 3vw, 2.5rem)' : 'clamp(1rem, 4vw, 1.5rem)',
             color: 'var(--text-primary)',
             opacity: 0.7
           }}>

@@ -1,299 +1,294 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import ScrollFadeIn from '../components/ScrollFadeIn';
+import { X } from 'lucide-react';
+import PageTransition from '../components/PageTransition';
 import { portfolioItems } from '../assets/data';
-import '../index.css';
+
+type FilterCategory = 'All' | 'Film & TV' | 'Set Design';
 
 const WorkPage = () => {
-  const navigate = useNavigate();
-  const [activeFilter, setActiveFilter] = useState('All');
-  const [selectedItem, setSelectedItem] = useState<typeof portfolioItems[0] | null>(null);
+  const [filter, setFilter] = useState<FilterCategory>('All');
+  const [selectedProject, setSelectedProject] = useState<typeof portfolioItems[0] | null>(null);
+  const [isDesktop, setIsDesktop] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    const handleResize = () => setIsDesktop(window.innerWidth > 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const categories = ['All', 'Film & TV', 'Set Design'];
+  const filtered = filter === 'All' ? portfolioItems : portfolioItems.filter(p => p.category === filter);
 
-  const filteredItems = activeFilter === 'All' 
-    ? portfolioItems 
-    : portfolioItems.filter(item => item.category === activeFilter);
-
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape' && selectedItem) {
-      setSelectedItem(null);
-    }
-  }, [selectedItem]);
+  const closeModal = useCallback(() => setSelectedProject(null), []);
 
   useEffect(() => {
-    if (selectedItem) {
-      document.addEventListener('keydown', handleKeyDown);
+    if (selectedProject) {
       document.body.style.overflow = 'hidden';
-    }
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+    } else {
       document.body.style.overflow = '';
-    };
-  }, [selectedItem, handleKeyDown]);
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedProject]);
 
   return (
-    <main className="app-container" style={{ paddingTop: '8rem', backgroundColor: 'var(--bg-primary)', minHeight: '100vh' }}>
-      
-      {/* 1. Page Header */}
-      <section className="container" style={{ paddingBottom: '3rem' }}>
-        <ScrollFadeIn>
-          <h1 style={{ marginBottom: '1rem', fontSize: 'clamp(3rem, 6vw, 6rem)' }}>
-            Selected <span className="text-gold">Works</span>.
-          </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', fontFamily: 'var(--font-heading)', maxWidth: '600px' }}>
-            A curated selection of our finest productions, set designs, and visual campaigns.
-          </p>
-        </ScrollFadeIn>
-      </section>
+    <PageTransition>
+      <main style={{ backgroundColor: 'var(--bg-primary)', paddingTop: isDesktop ? '10rem' : '7rem', minHeight: '100vh' }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: `0 var(--container-padding) ${isDesktop ? '6rem' : '3rem'}` }}>
 
-      {/* 2. Filter Bar */}
-      <section className="container" style={{ marginBottom: '3rem' }}>
-        <ScrollFadeIn delay={0.2}>
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            style={{ marginBottom: isDesktop ? '4rem' : '2.5rem' }}
+          >
+            <h1 style={{ fontSize: 'clamp(2.5rem, 7vw, 7rem)', textTransform: 'uppercase', marginBottom: '1rem' }}>
+              Our <span className="text-gold">Work</span>
+            </h1>
+            <p style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-heading)', fontSize: isDesktop ? '1.2rem' : '1rem', maxWidth: '500px' }}>
+              A curated selection of projects spanning film, TV, music videos, and experiential set design.
+            </p>
+          </motion.div>
+
+          {/* Filters */}
           <div style={{ 
             display: 'flex', 
-            gap: '1rem', 
-            flexWrap: 'wrap',
-            borderBottom: '1px solid var(--border)',
-            paddingBottom: '1.5rem'
+            gap: isDesktop ? '1.5rem' : '0.75rem', 
+            marginBottom: isDesktop ? '4rem' : '2.5rem', 
+            flexWrap: 'wrap' 
           }}>
-            {categories.map(category => (
-              <button
-                key={category}
-                onClick={() => setActiveFilter(category)}
-                className="cursor-hover"
+            {(['All', 'Film & TV', 'Set Design'] as FilterCategory[]).map((cat) => (
+              <button 
+                key={cat}
+                onClick={() => setFilter(cat)}
                 style={{
-                  background: 'none',
-                  border: 'none',
-                  padding: '0.5rem 1rem',
-                  color: activeFilter === category ? 'var(--accent)' : 'var(--text-muted)',
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '0.8rem',
-                  letterSpacing: '0.15em',
+                  padding: isDesktop ? '0.7rem 2rem' : '0.6rem 1.2rem',
+                  borderRadius: '30px',
+                  border: filter === cat ? '1px solid var(--accent)' : '1px solid var(--border)',
+                  backgroundColor: filter === cat ? 'var(--accent)' : 'transparent',
+                  color: filter === cat ? 'var(--bg-primary)' : 'var(--text-primary)',
+                  fontFamily: '"DM Sans", sans-serif',
+                  fontSize: isDesktop ? '0.9rem' : '0.8rem',
+                  fontWeight: 500,
+                  letterSpacing: '0.05em',
                   textTransform: 'uppercase',
-                  fontWeight: activeFilter === category ? 600 : 400,
-                  transition: 'color 0.3s ease'
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  minHeight: '44px',
                 }}
               >
-                {category}
+                {cat}
               </button>
             ))}
           </div>
-        </ScrollFadeIn>
-      </section>
 
-      {/* 3. Masonry Grid */}
-      <section className="container" style={{ paddingBottom: '6rem' }}>
-        <motion.div 
-          layout
-          style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-            gap: '1.5rem',
-          }}
-        >
-          <AnimatePresence>
-            {filteredItems.map((item) => (
+          {/* Masonry Grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isDesktop ? 'repeat(auto-fit, minmax(280px, 1fr))' : 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: isDesktop ? '2rem' : '1rem'
+          }}>
+            <AnimatePresence mode="popLayout">
+              {filtered.map((item) => (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.4 }}
+                  onClick={() => setSelectedProject(item)}
+                  whileHover={isDesktop ? "hover" : undefined}
+                  style={{
+                    position: 'relative',
+                    height: item.aspect === 'portrait' 
+                      ? (isDesktop ? '600px' : '400px') 
+                      : (isDesktop ? '400px' : '280px'),
+                    cursor: 'pointer',
+                    overflow: 'hidden',
+                    borderRadius: '8px'
+                  }}
+                >
+                  {item.video ? (
+                    <motion.video
+                      src={item.video}
+                      autoPlay muted loop playsInline
+                      variants={{ hover: { scale: 1.05 } }}
+                      transition={{ duration: 0.6 }}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.8)' }}
+                    />
+                  ) : (
+                    <motion.img
+                      src={item.image}
+                      alt={item.title}
+                      variants={{ hover: { scale: 1.05 } }}
+                      transition={{ duration: 0.6 }}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.8)' }}
+                    />
+                  )}
+
+                  {/* Desktop: gold overlay / Mobile: bottom gradient */}
+                  {isDesktop ? (
+                    <motion.div
+                      className="portfolio-overlay"
+                      variants={{ hover: { opacity: 1 } }}
+                      initial={{ opacity: 0 }}
+                      transition={{ duration: 0.4 }}
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'rgba(201,168,76,0.9)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '2rem',
+                        textAlign: 'center'
+                      }}
+                    >
+                      <span style={{ color: '#0D0D0D', fontSize: '0.8rem', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '1rem', fontWeight: 600 }}>
+                        {item.category}
+                      </span>
+                      <h3 style={{ color: '#0D0D0D', fontSize: '1.8rem', fontFamily: '"Cormorant Garamond", serif', marginBottom: '1rem' }}>
+                        {item.title}
+                      </h3>
+                      <span style={{ color: '#0D0D0D', fontSize: '0.85rem', letterSpacing: '0.05em', textTransform: 'uppercase', fontWeight: 700, borderBottom: '2px solid #0D0D0D', paddingBottom: '0.3rem' }}>
+                        View Details →
+                      </span>
+                    </motion.div>
+                  ) : (
+                    <div style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 35%, transparent 60%)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'flex-end',
+                      padding: '1rem',
+                    }}>
+                      <span style={{ color: 'var(--accent)', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '0.3rem' }}>
+                        {item.category}
+                      </span>
+                      <h3 style={{ color: '#fff', fontSize: '1rem', fontFamily: '"Cormorant Garamond", serif', margin: 0 }}>
+                        {item.title}
+                      </h3>
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Lightbox Modal */}
+        <AnimatePresence>
+          {selectedProject && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeModal}
+              className="lightbox-overlay"
+              style={{
+                justifyContent: 'center',
+                padding: isDesktop ? '4rem' : '1rem',
+                overflowY: 'auto'
+              }}
+            >
               <motion.div
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
+                initial={{ scale: 0.9, y: 30 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: 30 }}
                 transition={{ duration: 0.4 }}
-                key={item.id}
-                className="cursor-hover"
-                onClick={() => setSelectedItem(item)}
+                onClick={(e) => e.stopPropagation()}
                 style={{
-                  position: 'relative',
+                  maxWidth: '1200px',
                   width: '100%',
-                  height: item.aspect === 'portrait' ? '600px' : '400px',
-                  overflow: 'hidden',
-                  cursor: 'pointer',
                   backgroundColor: 'var(--bg-secondary)',
-                  gridRowEnd: item.aspect === 'portrait' ? 'span 2' : 'span 1'
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  maxHeight: isDesktop ? '90vh' : '95vh',
+                  overflowY: 'auto',
                 }}
               >
-                {item.video ? (
-                  <video 
-                    src={item.video} 
-                    autoPlay 
-                    muted 
-                    loop 
-                    playsInline
-                    aria-label={`${item.title} video preview`}
-                    className="cinematic-filter"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      transition: 'transform 0.8s var(--ease-out-expo)'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                  />
-                ) : (
-                  <img 
-                    src={item.image} 
-                    alt={item.title}
-                    loading="lazy"
-                    className="cinematic-filter"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                      transition: 'transform 0.8s var(--ease-out-expo)'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                  />
-                )}
+                {/* Media */}
+                <div style={{ width: '100%', height: isDesktop ? '70vh' : '40vh', position: 'relative', backgroundColor: '#000' }}>
+                  {selectedProject.video ? (
+                    <video 
+                      src={selectedProject.video}
+                      controls 
+                      autoPlay 
+                      playsInline
+                      muted
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+                    />
+                  ) : (
+                    <img 
+                      src={selectedProject.image}
+                      alt={selectedProject.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    />
+                  )}
 
-                
-                {/* Always visible category pill */}
-                <div style={{
-                  position: 'absolute',
-                  top: '1.5rem',
-                  left: '1.5rem',
-                  padding: '0.4rem 1rem',
-                  backgroundColor: 'rgba(13, 13, 13, 0.6)',
-                  backdropFilter: 'blur(4px)',
-                  color: 'var(--text-primary)',
-                  fontSize: '0.7rem',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                  border: '1px solid rgba(245, 240, 235, 0.1)',
-                  zIndex: 2
-                }}>
-                  {item.category}
+                  {/* Close button */}
+                  <button
+                    onClick={closeModal}
+                    aria-label="Close"
+                    className="lightbox-close"
+                  >
+                    <X size={20} />
+                  </button>
                 </div>
 
-                {/* Hover title */}
-                <div className="portfolio-overlay">
-                  <span style={{ marginBottom: '0.5rem', fontSize: '1.4rem', fontFamily: 'var(--font-heading)', textTransform: 'none', textAlign: 'center', padding: '0 2rem' }}>
-                    {item.title}
-                  </span>
-                  <div style={{ display: 'flex', gap: '1rem', opacity: 0.8 }}>
-                    <span style={{ fontSize: '0.75rem' }}>{item.year}</span>
-                    <span style={{ fontSize: '0.75rem' }}>•</span>
-                    <span style={{ fontSize: '0.75rem' }}>{item.role}</span>
+                {/* Details */}
+                <div style={{ padding: isDesktop ? '3rem' : '1.5rem' }}>
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: isDesktop ? '1fr 1fr' : '1fr',
+                    gap: isDesktop ? '3rem' : '1.5rem',
+                    alignItems: 'start'
+                  }}>
+                    <div>
+                      <span style={{ color: 'var(--accent)', fontSize: '0.8rem', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 600 }}>
+                        {selectedProject.category}
+                      </span>
+                      <h2 style={{ fontSize: isDesktop ? '2.5rem' : '1.8rem', fontFamily: '"Cormorant Garamond", serif', marginTop: '0.5rem', marginBottom: '1rem', lineHeight: 1.1 }}>
+                        {selectedProject.title}
+                      </h2>
+                      {selectedProject.description && (
+                        <p style={{ color: 'var(--text-muted)', lineHeight: 1.6, fontSize: '1.05rem' }}>{selectedProject.description}</p>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                      {selectedProject.role && (
+                        <div>
+                          <span style={{ color: 'var(--text-subtle)', fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '0.3rem' }}>Role</span>
+                          <span style={{ fontSize: '1.1rem' }}>{selectedProject.role}</span>
+                        </div>
+                      )}
+                      {selectedProject.year && (
+                        <div>
+                          <span style={{ color: 'var(--text-subtle)', fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '0.3rem' }}>Year</span>
+                          <span style={{ fontSize: '1.1rem' }}>{selectedProject.year}</span>
+                        </div>
+                      )}
+                      {selectedProject.platform && (
+                        <div>
+                          <span style={{ color: 'var(--text-subtle)', fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', display: 'block', marginBottom: '0.3rem' }}>Platform</span>
+                          <span style={{ fontSize: '1.1rem' }}>{selectedProject.platform}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-      </section>
-
-      {/* 4. Contact CTA */}
-      <section style={{ backgroundColor: 'var(--bg-tertiary)', padding: '6rem 0', textAlign: 'center' }}>
-        <h2 style={{ marginBottom: '2rem' }}>Love our work?</h2>
-        <button onClick={() => navigate('/contact')} className="cta-gold cursor-hover">
-          Let's collaborate
-        </button>
-      </section>
-
-      {/* 5. Lightbox Modal */}
-      <AnimatePresence>
-        {selectedItem && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            role="dialog"
-            aria-modal="true"
-            aria-label={`${selectedItem.title} details`}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              backgroundColor: 'rgba(13, 13, 13, 0.98)',
-              zIndex: 9999,
-              display: 'flex',
-              padding: '2rem',
-              overflowY: 'auto'
-            }}
-          >
-            <button 
-              className="cursor-hover"
-              onClick={() => setSelectedItem(null)}
-              aria-label="Close modal"
-              style={{
-                position: 'fixed',
-                top: '2rem',
-                right: '2rem',
-                background: 'none',
-                border: 'none',
-                color: 'var(--text-primary)',
-                fontSize: '1rem',
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                zIndex: 10000,
-                cursor: 'pointer'
-              }}
-            >
-              Close ✕
-            </button>
-
-            <div style={{ margin: 'auto', width: '100%', maxWidth: '1400px', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-              
-              {/* Media Container */}
-              <div style={{ width: '100%', height: '70vh', position: 'relative', backgroundColor: '#000' }}>
-                {selectedItem.video ? (
-                  <video 
-                    controls 
-                    autoPlay 
-                    src={selectedItem.video} 
-                    aria-label={`${selectedItem.title} full video`}
-                    style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
-                  />
-                ) : (
-                  <img 
-                    src={selectedItem.image} 
-                    alt={selectedItem.title} 
-                    style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
-                  />
-                )}
-              </div>
-
-              {/* Details Container */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', padding: '2rem 0' }}>
-                <div>
-                  <h2 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>{selectedItem.title}</h2>
-                  <div style={{ color: 'var(--accent)', fontSize: '0.85rem', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '1rem' }}>
-                    {selectedItem.category}
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', paddingBottom: '1rem' }}>
-                    <span style={{ width: '120px', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Role</span>
-                    <span style={{ color: 'var(--text-primary)' }}>{selectedItem.role}</span>
-                  </div>
-                  
-                  {selectedItem.platform && (
-                    <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', paddingBottom: '1rem' }}>
-                      <span style={{ width: '120px', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Platform</span>
-                      <span style={{ color: 'var(--text-primary)' }}>{selectedItem.platform}</span>
-                    </div>
-                  )}
-
-                  <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', paddingBottom: '1rem' }}>
-                    <span style={{ width: '120px', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Year</span>
-                    <span style={{ color: 'var(--text-primary)' }}>{selectedItem.year}</span>
-                  </div>
-                </div>
-              </div>
-              
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-    </main>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
+    </PageTransition>
   );
 };
 

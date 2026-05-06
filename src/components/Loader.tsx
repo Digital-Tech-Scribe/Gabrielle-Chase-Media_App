@@ -9,6 +9,14 @@ interface LoaderProps {
 const Loader = ({ onComplete }: LoaderProps) => {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [phase, setPhase] = useState<'flashing' | 'expanding' | 'text' | 'exiting'>('flashing');
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth > 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
@@ -63,7 +71,7 @@ const Loader = ({ onComplete }: LoaderProps) => {
         left: 0,
         width: '100vw',
         height: '100vh',
-        backgroundColor: '#0D0D0D', // BRAND COLOR
+        backgroundColor: '#0D0D0D',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -74,11 +82,15 @@ const Loader = ({ onComplete }: LoaderProps) => {
       {/* Prime Template style entrance flash */}
       <motion.div
         layout
-        initial={{ width: '25vw', height: '35vh', opacity: 0 }}
+        initial={{ 
+          width: isDesktop ? '25vw' : '60vw', 
+          height: isDesktop ? '35vh' : '40vh', 
+          opacity: 0 
+        }}
         animate={{ 
           opacity: phase === 'exiting' ? 0 : 1,
-          width: phase === 'flashing' ? '25vw' : '100vw', 
-          height: phase === 'flashing' ? '35vh' : '100vh',
+          width: phase === 'flashing' ? (isDesktop ? '25vw' : '60vw') : '100vw', 
+          height: phase === 'flashing' ? (isDesktop ? '35vh' : '40vh') : '100vh',
           borderRadius: '0px'
         }}
         transition={{ 
@@ -96,7 +108,7 @@ const Loader = ({ onComplete }: LoaderProps) => {
           <motion.img 
             key={activeImage}
             src={activeImage} 
-            alt="Loading Flash"
+            alt=""
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -107,7 +119,8 @@ const Loader = ({ onComplete }: LoaderProps) => {
               left: 0,
               width: '100%',
               height: '100%',
-              objectFit: 'cover'
+              objectFit: 'cover',
+              objectPosition: isDesktop ? 'center center' : '70% center'
             }}
           />
         </AnimatePresence>
@@ -129,7 +142,8 @@ const Loader = ({ onComplete }: LoaderProps) => {
         style={{
           position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', 
           zIndex: 100, pointerEvents: 'none',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          padding: isDesktop ? 0 : '0 1rem',
         }}
       >
         <motion.div 
@@ -147,17 +161,19 @@ const Loader = ({ onComplete }: LoaderProps) => {
           <motion.h1 
             layoutId="main-hero-title"
             style={{ 
-              fontSize: 'clamp(3.5rem, 10vw, 8rem)', fontWeight: 700, lineHeight: 0.9, 
+              fontSize: 'clamp(3rem, 10vw, 8rem)', fontWeight: 700, lineHeight: 0.9, 
               color: '#fff', textTransform: 'uppercase', letterSpacing: '-0.03em', margin: 0
             }}
           >
             GABRIELLE<br/>
             CHASE <span style={{ fontStyle: 'italic', fontWeight: 400 }}>MEDIA</span>
           </motion.h1>
-          {/* Transparent duplicate of Hero sub-headline to assure exact 1:1 vertical alignment */}
-          <p style={{ marginTop: '2rem', fontSize: '1.2rem', color: 'transparent', letterSpacing: '0.1em', textTransform: 'uppercase', userSelect: 'none' }}>
-            Award-Winning Art Direction & Content Production
-          </p>
+          {/* Transparent duplicate of Hero sub-headline — hidden on mobile */}
+          {isDesktop && (
+            <p style={{ marginTop: '2rem', fontSize: '1.2rem', color: 'transparent', letterSpacing: '0.1em', textTransform: 'uppercase', userSelect: 'none' }}>
+              Award-Winning Art Direction & Content Production
+            </p>
+          )}
         </motion.div>
       </motion.div>
     </motion.div>

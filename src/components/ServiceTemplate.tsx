@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import PageTransition from './PageTransition';
@@ -11,22 +12,31 @@ interface ServiceTemplateProps {
 }
 
 const ServiceTemplate = ({ title, tagline, image, description, deliverables }: ServiceTemplateProps) => {
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth > 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <PageTransition>
-      <div style={{ backgroundColor: 'var(--bg-primary)', minHeight: '100vh', paddingTop: '10rem', paddingBottom: '6rem' }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2rem' }}>
+      <div style={{ backgroundColor: 'var(--bg-primary)', minHeight: '100vh', paddingTop: isDesktop ? '10rem' : '7rem', paddingBottom: isDesktop ? '6rem' : '3rem' }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: isDesktop ? '0 2rem' : '0 1rem' }}>
           
           {/* 1. Hero */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            style={{ marginBottom: '8rem' }}
+            style={{ marginBottom: isDesktop ? '8rem' : '4rem' }}
           >
-            <h1 style={{ fontSize: 'clamp(3rem, 8vw, 6rem)', textTransform: 'uppercase', marginBottom: '1rem', lineHeight: 1 }}>
+            <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 6rem)', textTransform: 'uppercase', marginBottom: '1rem', lineHeight: 1 }}>
               {title}
             </h1>
-            <p style={{ fontSize: '1.5rem', color: 'var(--accent)', maxWidth: '800px', fontWeight: 300 }}>
+            <p style={{ fontSize: isDesktop ? '1.5rem' : '1.1rem', color: 'var(--accent)', maxWidth: '800px', fontWeight: 300 }}>
               {tagline}
             </p>
           </motion.div>
@@ -34,10 +44,10 @@ const ServiceTemplate = ({ title, tagline, image, description, deliverables }: S
           {/* 2. Overview Section */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-            gap: '6rem',
+            gridTemplateColumns: isDesktop ? 'repeat(auto-fit, minmax(400px, 1fr))' : '1fr',
+            gap: isDesktop ? '6rem' : '3rem',
             alignItems: 'center',
-            marginBottom: '10rem'
+            marginBottom: isDesktop ? '10rem' : '5rem'
           }}>
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -60,19 +70,19 @@ const ServiceTemplate = ({ title, tagline, image, description, deliverables }: S
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <h2 style={{ fontSize: '2.5rem', marginBottom: '2rem', fontWeight: 400 }}>Overview</h2>
-              <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', lineHeight: 1.8, marginBottom: '4rem' }}>
+              <h2 style={{ fontSize: isDesktop ? '2.5rem' : '2rem', marginBottom: '2rem', fontWeight: 400 }}>Overview</h2>
+              <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', lineHeight: 1.8, marginBottom: isDesktop ? '4rem' : '2.5rem' }}>
                 {description}
               </p>
 
               {/* 3. Deliverables */}
-              <h3 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              <h3 style={{ fontSize: isDesktop ? '1.5rem' : '1.2rem', marginBottom: '1.5rem', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                 Deliverables
               </h3>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {deliverables.map((item, idx) => (
                   <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '1.1rem', color: '#fff' }}>
-                    <div style={{ width: '6px', height: '6px', backgroundColor: 'var(--accent)', borderRadius: '50%' }} />
+                    <div style={{ width: '6px', height: '6px', backgroundColor: 'var(--accent)', borderRadius: '50%', flexShrink: 0 }} />
                     {item}
                   </li>
                 ))}
@@ -81,9 +91,9 @@ const ServiceTemplate = ({ title, tagline, image, description, deliverables }: S
           </div>
 
           {/* 4. Process */}
-          <div style={{ marginBottom: '10rem', borderTop: '1px solid var(--border)', paddingTop: '6rem' }}>
-            <h2 style={{ fontSize: '2.5rem', marginBottom: '4rem', textAlign: 'center', fontWeight: 400 }}>Our Process</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '4rem' }}>
+          <div style={{ marginBottom: isDesktop ? '10rem' : '5rem', borderTop: '1px solid var(--border)', paddingTop: isDesktop ? '6rem' : '3rem' }}>
+            <h2 style={{ fontSize: isDesktop ? '2.5rem' : '2rem', marginBottom: isDesktop ? '4rem' : '2.5rem', textAlign: 'center', fontWeight: 400 }}>Our Process</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? 'repeat(auto-fit, minmax(250px, 1fr))' : '1fr', gap: isDesktop ? '4rem' : '2.5rem' }}>
               {[
                 { step: '01', name: 'Discovery', desc: 'Deep dive into brand DNA, competitive landscape, and audience insights.' },
                 { step: '02', name: 'Creation', desc: 'Concept development, production mapping, and art direction execution.' },
@@ -105,9 +115,9 @@ const ServiceTemplate = ({ title, tagline, image, description, deliverables }: S
           </div>
 
           {/* 5. CTA */}
-          <div style={{ textAlign: 'center', padding: '6rem 0', backgroundColor: 'var(--bg-secondary)', borderRadius: '4px' }}>
-            <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', marginBottom: '2rem' }}>Ready to start your project?</h2>
-            <Link to="/connect/contact" style={{
+          <div style={{ textAlign: 'center', padding: isDesktop ? '6rem 0' : '3rem 1rem', backgroundColor: 'var(--bg-secondary)', borderRadius: '4px' }}>
+            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 3rem)', marginBottom: '2rem' }}>Ready to start your project?</h2>
+            <Link to="/contact" style={{
               display: 'inline-block',
               padding: '1.2rem 3rem',
               border: '1px solid var(--accent)',

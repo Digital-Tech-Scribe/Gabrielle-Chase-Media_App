@@ -1,160 +1,154 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import PageTransition from '../components/PageTransition';
 import ScrollFadeIn from '../components/ScrollFadeIn';
-import { services } from '../assets/data';
-import '../index.css';
+import { services, sceneVideos } from '../assets/data';
 
 const ServicesPage = () => {
-  const navigate = useNavigate();
+  const [isDesktop, setIsDesktop] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    const handleResize = () => setIsDesktop(window.innerWidth > 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
-    <main className="app-container" style={{ paddingTop: '8rem', backgroundColor: 'var(--bg-primary)' }}>
-      {/* 1. Services Header */}
-      <section className="section" style={{ paddingBottom: '4rem' }}>
-        <div className="container">
-          <ScrollFadeIn>
-            <h3 style={{ color: 'var(--accent)', fontSize: '0.85rem', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '1.5rem' }}>
-              What We Do
-            </h3>
-            <h1 style={{ marginBottom: '2rem', maxWidth: '900px', fontSize: 'clamp(3rem, 6vw, 6rem)' }}>
-              Crafting <span className="text-gold">visual excellence</span> across disciplines.
-            </h1>
-            <p style={{ 
-              color: 'var(--text-muted)', 
-              fontSize: 'clamp(1rem, 1.5vw, 1.25rem)', 
-              maxWidth: '600px',
-              fontFamily: 'var(--font-heading)',
-              letterSpacing: '0.05em'
+    <PageTransition>
+      <main className="section-dark">
+
+        {/* Hero */}
+        <section className="pos-relative">
+          <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+            <ScrollFadeIn>
+              <h1 style={{ fontSize: 'clamp(2.5rem, 7vw, 7rem)', textTransform: 'uppercase', marginBottom: '1rem', lineHeight: 0.95 }}>
+                Our <span className="text-gold">Services</span>
+              </h1>
+              <p style={{ 
+                maxWidth: '600px', 
+                color: 'var(--text-muted)', 
+                fontSize: isDesktop ? '1.2rem' : '1rem',
+                fontFamily: 'var(--font-heading)',
+                letterSpacing: '0.02em',
+                lineHeight: 1.6
+              }}>
+                From concept to completion — we offer end-to-end creative solutions spanning art direction, production design, and content creation.
+              </p>
+            </ScrollFadeIn>
+          </div>
+        </section>
+
+        {/* Service Sections */}
+        {services.map((service, idx) => {
+          const isEven = idx % 2 === 0;
+          const relatedVideo = Object.values(sceneVideos)[idx]?.src || service.video;
+          
+          return (
+            <section key={service.id} style={{ 
+              padding: 'var(--section-padding) var(--container-padding)', 
+              borderTop: '1px solid var(--border)' 
             }}>
-              From epic period piece film sets to high-end commercial photo shoots, our multi-disciplinary approach ensures every detail tells the right story.
-            </p>
-          </ScrollFadeIn>
-        </div>
-      </section>
-
-      {/* 2. Full-Width Service Sections */}
-      {services.map((service, index) => {
-        const isEven = index % 2 === 0;
-
-        return (
-          <section 
-            key={service.id} 
-            style={{ 
-              backgroundColor: isEven ? 'var(--bg-primary)' : 'var(--bg-tertiary)',
-              borderTop: isEven ? 'none' : '1px solid var(--border)',
-              borderBottom: isEven ? 'none' : '1px solid var(--border)',
-            }}
-            className="section"
-          >
-            <div className="container">
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-                gap: 'clamp(3rem, 8vw, 6rem)',
+              <div style={{
+                maxWidth: '1400px',
+                margin: '0 auto',
+                display: 'grid',
+                gridTemplateColumns: isDesktop ? 'repeat(2, 1fr)' : '1fr',
+                gap: isDesktop ? 'clamp(3rem, 8vw, 6rem)' : '2rem',
                 alignItems: 'center'
               }}>
-                
-                {/* Image Side (Alternating on Desktop) */}
-                <div style={{ order: isEven ? 1 : 2 }}>
-                  <ScrollFadeIn direction={isEven ? 'right' : 'left'}>
-                    <div style={{ 
-                      position: 'relative', 
-                      width: '100%', 
+                {/* Image / Video Column */}
+                <ScrollFadeIn delay={0.1}>
+                  <motion.div
+                    style={{
+                      position: 'relative',
                       aspectRatio: '4/5',
-                      overflow: 'hidden'
-                    }}>
-                      {service.video ? (
-                        <video 
-                          autoPlay 
-                          muted 
-                          loop 
-                          playsInline
-                          aria-label={`${service.name} showcase video`}
-                          className="cinematic-filter"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        >
-                          <source src={service.video} type="video/mp4" />
-                        </video>
-                      ) : (
-                        <img 
-                          src={service.image} 
-                          alt={service.name} 
-                          className="cinematic-filter"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
-                      )}
-                      
-                      {/* Subtle border overlay */}
-                      <div style={{ 
-                        position: 'absolute', 
-                        inset: 0, 
-                        border: '1px solid var(--border-gold)', 
-                        margin: '1.5rem', 
-                        pointerEvents: 'none' 
-                      }} />
-                    </div>
-                  </ScrollFadeIn>
-                </div>
+                      overflow: 'hidden',
+                      borderRadius: '4px',
+                      order: isDesktop ? (isEven ? 1 : 2) : 1
+                    }}
+                    whileHover={isDesktop ? { scale: 1.01 } : {}}
+                    transition={{ duration: 0.4 }}
+                  >
+                    {relatedVideo ? (
+                      <video 
+                        src={relatedVideo}
+                        autoPlay 
+                        muted 
+                        loop 
+                        playsInline
+                        aria-label={`${service.name} showcase video`}
+                        className="cinematic-filter"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <img 
+                        src={service.image} 
+                        alt={service.name}
+                        className="cinematic-filter"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    )}
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--bg-primary) 0%, transparent 30%)', pointerEvents: 'none' }} />
+                  </motion.div>
+                </ScrollFadeIn>
 
-                {/* Content Side */}
-                <div style={{ order: isEven ? 2 : 1 }}>
-                  <ScrollFadeIn direction={isEven ? 'left' : 'right'}>
-                    <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>
-                      {service.icon}
-                    </div>
-                    
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-                      <span style={{ color: 'var(--accent)', fontSize: '0.9rem', fontFamily: 'var(--font-heading)', letterSpacing: '0.1em' }}>
-                        0{index + 1}
-                      </span>
-                      <h2 style={{ margin: 0 }}>{service.name}</h2>
-                    </div>
-                    
-                    <p style={{ color: 'var(--text-muted)', fontSize: '1.15rem', marginBottom: '3rem', maxWidth: '500px' }}>
+                {/* Content Column */}
+                <div style={{ order: isDesktop ? (isEven ? 2 : 1) : 2 }}>
+                  <ScrollFadeIn delay={0.2}>
+                    <div style={{ fontSize: isDesktop ? '3rem' : '2rem', marginBottom: '1.5rem' }}>{service.icon}</div>
+                    <h2 style={{ fontSize: isDesktop ? 'clamp(2rem, 4vw, 3.5rem)' : 'clamp(1.8rem, 5vw, 2.5rem)', marginBottom: '1.5rem', lineHeight: 1.1 }}>
+                      {service.name}
+                    </h2>
+                    <p style={{ 
+                      fontSize: isDesktop ? '1.15rem' : '1rem', 
+                      color: 'var(--text-muted)', 
+                      lineHeight: 1.7, 
+                      marginBottom: '2.5rem' 
+                    }}>
                       {service.description}
                     </p>
-
-                    <div style={{ marginBottom: '3rem' }}>
-                      <h4 style={{ color: 'var(--text-primary)', fontSize: '0.8rem', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '1.5rem' }}>
-                        Deliverables
-                      </h4>
-                      <ul style={{ listStyle: 'none', padding: 0 }}>
-                        {service.deliverables.map((item, i) => (
-                          <li key={i} style={{ 
-                            color: 'var(--text-muted)', 
-                            padding: '0.8rem 0',
-                            borderBottom: '1px solid var(--border)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '1rem'
-                          }}>
-                            <span style={{ color: 'var(--accent)', fontSize: '0.5rem' }}>◆</span>
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <button 
-                      onClick={() => navigate('/contact')} 
-                      className="cta-outline cursor-hover"
-                    >
-                      Request Service
-                    </button>
+                    
+                    <h4 style={{ 
+                      color: 'var(--accent)', 
+                      fontSize: '0.8rem', 
+                      letterSpacing: '0.2em', 
+                      textTransform: 'uppercase', 
+                      marginBottom: '1.5rem' 
+                    }}>
+                      Deliverables
+                    </h4>
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      {service.deliverables.map((item, i) => (
+                        <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '1.05rem', color: '#fff' }}>
+                          <div style={{ width: '6px', height: '6px', backgroundColor: 'var(--accent)', borderRadius: '50%', flexShrink: 0 }} />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
                   </ScrollFadeIn>
                 </div>
-
               </div>
-            </div>
-          </section>
-        );
-      })}
+            </section>
+          );
+        })}
 
-    </main>
+        {/* CTA */}
+        <section className="section" style={{ textAlign: 'center', borderTop: '1px solid var(--border)', paddingBottom: isDesktop ? '8rem' : '4rem' }}>
+          <div className="container">
+            <ScrollFadeIn>
+              <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', marginBottom: '2rem' }}>Interested in working with us?</h2>
+              <Link to="/contact" className="cta-gold cursor-hover">
+                Get In Touch
+              </Link>
+            </ScrollFadeIn>
+          </div>
+        </section>
+
+      </main>
+    </PageTransition>
   );
 };
 

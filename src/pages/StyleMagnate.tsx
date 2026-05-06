@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import ScrollFadeIn from '../components/ScrollFadeIn';
@@ -7,13 +7,18 @@ import { filmTvProjects, tutorialVideos } from '../assets/data';
 const StyleMagnate = () => {
   const navigate = useNavigate();
   const project = filmTvProjects.find(p => p.id === 'style-magnate');
+  const [isDesktop, setIsDesktop] = useState(true);
   
   useEffect(() => {
     window.scrollTo(0, 0);
+    const handleResize = () => setIsDesktop(window.innerWidth > 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
-    <main style={{ backgroundColor: 'var(--bg-primary)', minHeight: '100vh', overflow: 'hidden' }}>
+    <main className="section-dark overflow-hidden" style={{ minHeight: '100vh' }}>
       
       {/* Hero Section */}
       <section style={{ position: 'relative', height: '100vh', width: '100%', display: 'flex', alignItems: 'center' }}>
@@ -43,25 +48,25 @@ const StyleMagnate = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             style={{ maxWidth: '700px' }}
           >
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: isDesktop ? '1rem' : '0.5rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
               <span style={{ 
                 color: 'var(--accent)', 
-                fontSize: '0.8rem', 
+                fontSize: isDesktop ? '0.8rem' : '0.7rem', 
                 letterSpacing: '0.2em', 
                 textTransform: 'uppercase',
                 border: '1px solid var(--accent)',
-                padding: '0.4rem 1rem',
+                padding: isDesktop ? '0.4rem 1rem' : '0.35rem 0.75rem',
                 borderRadius: '2px'
               }}>
                 Showmax Original
               </span>
-              <span className="award-badge glass-panel text-gold" style={{ padding: '0.4rem 1rem' }}>
+              <span className="award-badge glass-panel text-gold" style={{ padding: isDesktop ? '0.4rem 1rem' : '0.35rem 0.75rem' }}>
                 🏆 AMVCA11 Nominated
               </span>
             </div>
 
             <h1 style={{ 
-              fontSize: 'clamp(4rem, 10vw, 8rem)', 
+              fontSize: 'clamp(3.5rem, 10vw, 8rem)', 
               lineHeight: 0.9,
               marginBottom: '2rem',
               color: 'var(--text-primary)',
@@ -72,10 +77,10 @@ const StyleMagnate = () => {
 
             <p style={{ 
               color: 'var(--text-muted)', 
-              fontSize: '1.2rem', 
+              fontSize: isDesktop ? '1.2rem' : '1rem', 
               fontFamily: 'var(--font-heading)',
               lineHeight: 1.6,
-              marginBottom: '3rem',
+              marginBottom: isDesktop ? '3rem' : '2rem',
               maxWidth: '500px'
             }}>
               20 designers. ₦100M prize. Nigeria's most prestigious fashion competition series. Created and executive produced by Abisola Omolade.
@@ -94,7 +99,11 @@ const StyleMagnate = () => {
       {/* Details Section */}
       <section className="section" style={{ backgroundColor: 'var(--bg-primary)', borderTop: '1px solid var(--border)' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '4rem' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: isDesktop ? 'repeat(auto-fit, minmax(300px, 1fr))' : '1fr', 
+            gap: isDesktop ? '4rem' : '2.5rem' 
+          }}>
             
             <ScrollFadeIn>
               <h3 style={{ color: 'var(--text-primary)', fontSize: '0.85rem', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '2rem' }}>
@@ -129,7 +138,7 @@ const StyleMagnate = () => {
       </section>
 
       {/* Media / Video teaser */}
-      <section style={{ position: 'relative', width: '100%', height: '80vh', backgroundColor: '#000' }}>
+      <section className="pos-relative" style={{ width: '100%', height: isDesktop ? '80vh' : '60vh', backgroundColor: '#000' }}>
         <video 
           autoPlay 
           muted 
@@ -144,8 +153,8 @@ const StyleMagnate = () => {
           <button 
             onClick={() => navigate('/work')}
             style={{
-              width: '100px',
-              height: '100px',
+              width: isDesktop ? '100px' : '80px',
+              height: isDesktop ? '100px' : '80px',
               borderRadius: '50%',
               backgroundColor: 'var(--accent)',
               color: 'var(--bg-primary)',
@@ -157,10 +166,8 @@ const StyleMagnate = () => {
               transition: 'transform 0.3s ease'
             }}
             className="cursor-hover"
-            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
           >
-            <span style={{ fontFamily: 'var(--font-heading)', fontSize: '1.2rem', letterSpacing: '0.1em', marginLeft: '0.2rem' }}>PLAY</span>
+            <span style={{ fontFamily: 'var(--font-heading)', fontSize: isDesktop ? '1.2rem' : '1rem', letterSpacing: '0.1em', marginLeft: '0.2rem' }}>PLAY</span>
           </button>
         </div>
       </section>

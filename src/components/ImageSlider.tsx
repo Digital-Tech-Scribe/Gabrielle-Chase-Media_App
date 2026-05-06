@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 const images = [
@@ -10,6 +10,15 @@ const images = [
 
 const ImageSlider = () => {
   const targetRef = useRef<HTMLDivElement>(null);
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth > 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: targetRef,
   });
@@ -17,25 +26,25 @@ const ImageSlider = () => {
   const x = useTransform(scrollYProgress, [0, 1], ["10%", "-80%"]);
 
   return (
-    <section ref={targetRef} style={{ position: 'relative', height: '300vh', backgroundColor: 'var(--bg-color)' }}>
-      <div style={{ position: 'sticky', top: 0, height: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+    <section ref={targetRef} className="pos-relative overflow-hidden">
+      <div className="overflow-hidden" style={{ position: 'sticky', top: 0, height: '100vh', display: 'flex', alignItems: 'center' }}>
         
-        {/* Title layer for visual interest */}
-        <div style={{ position: 'absolute', top: '20%', left: '10%', zIndex: 10 }}>
-          <h2 style={{ fontSize: '3rem', fontWeight: 300, color: '#fff', opacity: 0.8 }}>
+        {/* Title layer */}
+        <div style={{ position: 'absolute', top: '20%', left: isDesktop ? '10%' : '5%', zIndex: 10 }}>
+          <h2 style={{ fontSize: isDesktop ? '3rem' : '1.8rem', fontWeight: 300, color: '#fff', opacity: 0.8 }}>
             Featured Collections
           </h2>
           <div style={{ width: '50px', height: '2px', backgroundColor: 'var(--accent-color)', marginTop: '1rem' }} />
         </div>
 
-        <motion.div style={{ x, display: 'flex', gap: '4rem', paddingLeft: '20vw', alignItems: 'center' }}>
+        <motion.div style={{ x, display: 'flex', gap: isDesktop ? '4rem' : '2rem', paddingLeft: isDesktop ? '20vw' : '5vw', alignItems: 'center' }}>
           {images.map((img, index) => (
             <div 
               key={index} 
               className="glass-panel"
               style={{
-                width: '60vw',
-                height: '60vh',
+                width: isDesktop ? '60vw' : '85vw',
+                height: isDesktop ? '60vh' : '50vh',
                 flexShrink: 0,
                 position: 'relative',
                 overflow: 'hidden',
@@ -53,8 +62,8 @@ const ImageSlider = () => {
                   filter: 'grayscale(20%) contrast(110%)',
                   transition: 'transform 0.5s ease',
                 }}
-                onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-                onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                onMouseOver={(e) => { if (isDesktop) e.currentTarget.style.transform = 'scale(1.05)'; }}
+                onMouseOut={(e) => { if (isDesktop) e.currentTarget.style.transform = 'scale(1)'; }}
               />
             </div>
           ))}

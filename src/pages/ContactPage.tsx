@@ -16,9 +16,13 @@ const ContactPage = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    const handleResize = () => setIsDesktop(window.innerWidth > 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
     
     const styleTag = document.createElement('style');
     styleTag.innerHTML = `
@@ -29,6 +33,7 @@ const ContactPage = () => {
     document.head.appendChild(styleTag);
     
     return () => {
+      window.removeEventListener('resize', handleResize);
       document.head.removeChild(styleTag);
     };
   }, []);
@@ -53,29 +58,57 @@ const ContactPage = () => {
     }, 1500);
   }, []);
 
+  const labelStyle = {
+    display: 'block' as const,
+    color: 'var(--text-primary)',
+    fontSize: '0.8rem',
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase' as const,
+    marginBottom: '0.5rem'
+  };
+
   return (
     <main className="app-container" style={{ backgroundColor: 'var(--bg-primary)', minHeight: '100vh', display: 'flex' }}>
       
-      {/* 1. Split Layout Container */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', width: '100%', minHeight: '100vh' }}>
+      {/* Split Layout Container */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: isDesktop ? '1fr 1fr' : '1fr', 
+        width: '100%', 
+        minHeight: '100vh' 
+      }}>
         
         {/* Left Side: Image Panel */}
-        <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '400px', overflow: 'hidden' }}>
+        <div style={{ 
+          position: 'relative', 
+          width: '100%', 
+          height: isDesktop ? '100%' : '300px',
+          minHeight: isDesktop ? '400px' : '250px',
+          overflow: 'hidden' 
+        }}>
           <div 
             aria-label="Gabrielle Chase Media creative workspace"
             style={{ width: '100%', height: '100%', backgroundColor: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
-            <span style={{ color: 'var(--accent)', fontSize: '4rem' }}>🎬</span>
+            <span style={{ color: 'var(--accent)', fontSize: isDesktop ? '4rem' : '3rem' }}>🎬</span>
           </div>
           {/* Dark overlay */}
           <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(13,13,13,0.6)' }} />
           
-          <div style={{ position: 'absolute', inset: 0, padding: 'clamp(2rem, 6vw, 6rem)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', zIndex: 10 }}>
+          <div style={{ 
+            position: 'absolute', 
+            inset: 0, 
+            padding: isDesktop ? 'clamp(2rem, 6vw, 6rem)' : '2rem 1.25rem',
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'flex-end', 
+            zIndex: 10 
+          }}>
             <ScrollFadeIn delay={0.2} direction="right">
-              <h1 style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', marginBottom: '1rem', lineHeight: 1 }}>
+              <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)', marginBottom: '1rem', lineHeight: 1 }}>
                 Let's <span className="text-gold">Create</span>.
               </h1>
-              <p style={{ color: 'var(--text-light)', fontFamily: 'var(--font-heading)', fontSize: '1.2rem', maxWidth: '400px' }}>
+              <p style={{ color: 'var(--text-light)', fontFamily: 'var(--font-heading)', fontSize: isDesktop ? '1.2rem' : '0.95rem', maxWidth: '400px' }}>
                 Whether it's an epic period film, an immersive set design, or a global commercial campaign — we bring vision to life.
               </p>
             </ScrollFadeIn>
@@ -84,7 +117,9 @@ const ContactPage = () => {
 
         {/* Right Side: Contact Form & Info */}
         <div style={{ 
-          padding: 'clamp(4rem, 8vw, 8rem) clamp(2rem, 6vw, 6rem)', 
+          padding: isDesktop 
+            ? 'clamp(4rem, 8vw, 8rem) clamp(2rem, 6vw, 6rem)' 
+            : '2.5rem 1.25rem',
           backgroundColor: 'var(--bg-tertiary)',
           display: 'flex',
           flexDirection: 'column',
@@ -93,7 +128,12 @@ const ContactPage = () => {
           <ScrollFadeIn>
             
             {/* Contact Details */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', marginBottom: '4rem' }}>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: isDesktop ? 'repeat(auto-fit, minmax(200px, 1fr))' : '1fr', 
+              gap: '2rem', 
+              marginBottom: isDesktop ? '4rem' : '2.5rem'
+            }}>
               <div>
                 <h4 style={{ color: 'var(--text-primary)', fontSize: '0.75rem', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '1rem' }}>Location</h4>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.8rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
@@ -121,7 +161,7 @@ const ContactPage = () => {
             </div>
 
             {/* Form */}
-            <h3 style={{ fontSize: '2rem', fontFamily: 'var(--font-heading)', marginBottom: '2rem' }}>Start a Conversation</h3>
+            <h3 style={{ fontSize: isDesktop ? '2rem' : '1.5rem', fontFamily: 'var(--font-heading)', marginBottom: '2rem' }}>Start a Conversation</h3>
             
             {isSuccess ? (
               <motion.div 
@@ -132,7 +172,8 @@ const ContactPage = () => {
                   backgroundColor: 'rgba(201, 168, 76, 0.1)', 
                   border: '1px solid var(--accent)',
                   color: 'var(--text-primary)',
-                  textAlign: 'center'
+                  textAlign: 'center',
+                  borderRadius: '4px',
                 }}
               >
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✨</div>
@@ -142,7 +183,7 @@ const ContactPage = () => {
             ) : (
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isDesktop ? '1fr 1fr' : '1fr', gap: '1.5rem' }}>
                   <div className="form-group">
                     <label htmlFor="name" style={labelStyle}>Name *</label>
                     <input 
@@ -152,8 +193,7 @@ const ContactPage = () => {
                       required 
                       value={formData.name}
                       onChange={handleChange}
-                      style={inputStyle}
-                      className="cursor-hover"
+                      className="contact-form-field cursor-hover"
                       placeholder="Jane Doe"
                     />
                   </div>
@@ -167,8 +207,7 @@ const ContactPage = () => {
                       required 
                       value={formData.email}
                       onChange={handleChange}
-                      style={inputStyle}
-                      className="cursor-hover"
+                      className="contact-form-field cursor-hover"
                       placeholder="jane@example.com"
                     />
                   </div>
@@ -182,8 +221,7 @@ const ContactPage = () => {
                     required 
                     value={formData.service}
                     onChange={handleChange}
-                    style={inputStyle}
-                    className="cursor-hover"
+                    className="contact-form-field cursor-hover"
                   >
                     <option value="" disabled>Select a service...</option>
                     {services.map(service => (
@@ -202,8 +240,7 @@ const ContactPage = () => {
                     rows={5}
                     value={formData.message}
                     onChange={handleChange}
-                    style={{ ...inputStyle, resize: 'vertical' }}
-                    className="cursor-hover"
+                    className="contact-form-field cursor-hover"
                     placeholder="Tell us about your project..."
                   />
                 </div>
@@ -212,7 +249,7 @@ const ContactPage = () => {
                   type="submit" 
                   disabled={isSubmitting}
                   className="cta-gold cursor-hover"
-                  style={{ marginTop: '1rem', alignSelf: 'flex-start', opacity: isSubmitting ? 0.7 : 1 }}
+                  style={{ marginTop: '1rem', alignSelf: isDesktop ? 'flex-start' : 'stretch', opacity: isSubmitting ? 0.7 : 1 }}
                 >
                   {isSubmitting ? 'Sending...' : 'Send Message'}
                 </button>
@@ -220,7 +257,7 @@ const ContactPage = () => {
             )}
 
             {/* Socials */}
-            <div style={{ marginTop: '4rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ marginTop: isDesktop ? '4rem' : '2.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <span style={{ color: 'var(--text-primary)', fontSize: '0.75rem', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Follow Us</span>
               <div style={{ width: '40px', height: '1px', backgroundColor: 'var(--border)' }}></div>
               <a 
@@ -229,8 +266,8 @@ const ContactPage = () => {
                 rel="noopener noreferrer"
                 className="cursor-hover"
                 style={{
-                  width: '40px',
-                  height: '40px',
+                  width: '44px',
+                  height: '44px',
                   borderRadius: '50%',
                   border: '1px solid var(--border)',
                   display: 'flex',
@@ -238,15 +275,6 @@ const ContactPage = () => {
                   justifyContent: 'center',
                   color: 'var(--text-muted)',
                   transition: 'all 0.3s ease',
-
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--accent)';
-                  e.currentTarget.style.color = 'var(--accent)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--border)';
-                  e.currentTarget.style.color = 'var(--text-muted)';
                 }}
               >
                 <Instagram size={18} />
@@ -258,28 +286,6 @@ const ContactPage = () => {
       </div>
     </main>
   );
-};
-
-// Form styles
-const labelStyle = {
-  display: 'block',
-  color: 'var(--text-primary)',
-  fontSize: '0.8rem',
-  letterSpacing: '0.1em',
-  textTransform: 'uppercase' as const,
-  marginBottom: '0.5rem'
-};
-
-const inputStyle = {
-  width: '100%',
-  backgroundColor: 'rgba(255, 255, 255, 0.03)',
-  border: '1px solid var(--border)',
-  color: 'var(--text-primary)',
-  padding: '1rem 1.25rem',
-  fontFamily: 'var(--font-body)',
-  fontSize: '1rem',
-  outline: 'none',
-  transition: 'border-color 0.3s ease'
 };
 
 export default ContactPage;

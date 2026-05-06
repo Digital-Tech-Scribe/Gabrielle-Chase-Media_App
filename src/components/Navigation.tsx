@@ -21,10 +21,18 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMenuAnimComplete, setIsMenuAnimComplete] = useState(false);
   const [locationIndex, setLocationIndex] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(true);
 
   const { scrollY } = useScroll();
   const headerOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const headerY = useTransform(scrollY, [0, 400], [0, -25]);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth > 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -83,7 +91,9 @@ const Navigation = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '2rem 5rem',
+          padding: isDesktop 
+            ? 'clamp(1.5rem, 3vw, 2rem) var(--container-padding)' 
+            : '1rem var(--container-padding)',
           zIndex: 100,
           color: '#fff',
           fontFamily: '"DM Sans", sans-serif',
@@ -91,7 +101,7 @@ const Navigation = () => {
           y: headerY,
         }}
       >
-        <div style={{ 
+        <div className="desktop-only" style={{ 
           flex: 1, 
           fontSize: '0.85rem', 
           letterSpacing: '0.05em', 
@@ -132,14 +142,15 @@ const Navigation = () => {
               src={logoLight} 
               alt="Gabrielle Chase Media" 
               style={{ 
-                height: '180px', 
-                objectFit: 'contain'
+                height: isDesktop ? '180px' : '80px', 
+                objectFit: 'contain',
+                transition: 'height 0.3s ease'
               }} 
             />
           </Link>
         </div>
 
-        <div style={{ 
+        <div className="desktop-only" style={{ 
           flex: 1, 
           display: 'flex', 
           justifyContent: 'flex-end', 
@@ -165,13 +176,14 @@ const Navigation = () => {
       <div 
         style={{
           position: 'fixed',
-          bottom: '12vh',
+          bottom: isDesktop ? '12vh' : '4vh',
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
           alignItems: 'center',
           gap: '1rem',
-          zIndex: 100
+          zIndex: 100,
+          paddingBottom: 'env(safe-area-inset-bottom, 0)',
         }}
       >
         {/* The Toggle Button */}
@@ -200,7 +212,7 @@ const Navigation = () => {
             zIndex: 10,
             outline: 'none',
           }}
-          whileHover={{ scale: 1.05 }}
+          whileHover={isDesktop ? { scale: 1.05 } : {}}
           whileTap={{ scale: 0.95 }}
         >
           {/* Hamburger Lines */}
@@ -208,71 +220,149 @@ const Navigation = () => {
           <div style={{ width: '20px', height: '2px', backgroundColor: '#F5F0EB', borderRadius: '2px' }} />
         </motion.button>
 
-        {/* The Expanding Menu Container */}
+        {/* Desktop: Expanding Pill Menu */}
+        {isDesktop && (
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                id="nav-menu"
+                role="menu"
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: 'auto', opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                onAnimationComplete={() => {
+                  if (isOpen) setIsMenuAnimComplete(true);
+                }}
+                style={{
+                  overflow: isMenuAnimComplete ? 'visible' : 'hidden',
+                  backgroundColor: 'rgba(13, 13, 13, 0.95)',
+                  backdropFilter: 'blur(10px)',
+                  borderRadius: '30px',
+                  border: '1px solid rgba(201,168,76,0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '0 1.5rem',
+                  height: '60px',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                <div style={{ display: 'flex', gap: '2rem', height: '100%' }} role="none">
+                  {navItems.map((item) => (
+                    <div
+                      key={item.name}
+                      role="menuitem"
+                      style={{ position: 'relative', display: 'flex', alignItems: 'center', height: '100%' }}
+                    >
+                      <Link
+                        to={item.path}
+                        onClick={closeMenu}
+                        style={{
+                          color: '#F5F0EB',
+                          textDecoration: 'none',
+                          fontFamily: '"DM Sans", sans-serif',
+                          fontSize: '0.9rem',
+                          fontWeight: 500,
+                          letterSpacing: '0.05em',
+                          textTransform: 'uppercase',
+                          position: 'relative',
+                          zIndex: 2,
+                          cursor: 'pointer',
+                          transition: 'color 0.3s'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.color = '#C9A84C';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.color = '#F5F0EB';
+                        }}
+                      >
+                        {item.name}
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
+      </div>
+
+      {/* Mobile: Fullscreen Overlay Menu */}
+      {!isDesktop && (
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              id="nav-menu"
+              id="nav-menu-mobile"
               role="menu"
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 'auto', opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              onAnimationComplete={() => {
-                if (isOpen) setIsMenuAnimComplete(true);
-              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               style={{
-                overflow: isMenuAnimComplete ? 'visible' : 'hidden',
-                backgroundColor: 'rgba(13, 13, 13, 0.95)',
-                backdropFilter: 'blur(10px)',
-                borderRadius: '30px',
-                border: '1px solid rgba(201,168,76,0.2)',
+                position: 'fixed',
+                inset: 0,
+                backgroundColor: 'rgba(13, 13, 13, 0.97)',
+                backdropFilter: 'blur(20px)',
+                zIndex: 99,
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
-                padding: '0 1.5rem',
-                height: '60px',
-                whiteSpace: 'nowrap'
+                justifyContent: 'center',
+                gap: '0.5rem',
               }}
             >
-              <div style={{ display: 'flex', gap: '2rem', height: '100%' }} role="none">
-                {navItems.map((item) => (
-                  <div
-                    key={item.name}
-                    role="menuitem"
-                    style={{ position: 'relative', display: 'flex', alignItems: 'center', height: '100%' }}
+              {navItems.map((item, idx) => (
+                <motion.div
+                  key={item.name}
+                  role="menuitem"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.4, delay: idx * 0.07, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <Link
+                    to={item.path}
+                    onClick={closeMenu}
+                    style={{
+                      color: '#F5F0EB',
+                      textDecoration: 'none',
+                      fontFamily: '"Cormorant Garamond", serif',
+                      fontSize: '2.5rem',
+                      fontWeight: 400,
+                      letterSpacing: '0.02em',
+                      textTransform: 'uppercase',
+                      display: 'block',
+                      padding: '0.75rem 2rem',
+                      textAlign: 'center',
+                      transition: 'color 0.3s',
+                    }}
                   >
-                    <Link
-                      to={item.path}
-                      onClick={closeMenu}
-                      style={{
-                        color: '#F5F0EB',
-                        textDecoration: 'none',
-                        fontFamily: '"DM Sans", sans-serif',
-                        fontSize: '0.9rem',
-                        fontWeight: 500,
-                        letterSpacing: '0.05em',
-                        textTransform: 'uppercase',
-                        position: 'relative',
-                        zIndex: 2,
-                        cursor: 'pointer',
-                        transition: 'color 0.3s'
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.color = '#C9A84C';
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.color = '#F5F0EB';
-                      }}
-                    >
-                      {item.name}
-                    </Link>
-                  </div>
-                ))}
-              </div>
+                    {item.name}
+                  </Link>
+                </motion.div>
+              ))}
+
+              {/* Location indicator in mobile menu */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                style={{
+                  marginTop: '3rem',
+                  color: 'var(--accent)',
+                  fontSize: '0.8rem',
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                  fontWeight: 600,
+                }}
+              >
+                {locations[locationIndex]}
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      )}
     </>
   );
 };

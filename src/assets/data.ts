@@ -27,7 +27,6 @@ import awardsStudents2Portrait from '../../GRABIELLE-MEDIA/awards-to-students2_p
 
 // Crew photo
 import crewLandscape from '../../GRABIELLE-MEDIA/crew_landscape.jpg';
-import hotfmLagosPortrait from '../../GRABIELLE-MEDIA/Speaking today with the good people at hotfm_lagos on everything about birthing and creating th 2_upscayl_1x_upscayl-standard-4x.webp';
 
 // Founder / Awards photo imported newly
 import abisolaAwardPortrait from './abisola-award.webp';
@@ -147,7 +146,7 @@ export const loaderImages: string[] = [
   tutorialPreview5Landscape,
   moviePreviewPortrait,
   tutorialPreview3Landscape,
-  hotfmLagosPortrait,
+  aboutHeroPortrait,
 ];
 
 // ============================================================

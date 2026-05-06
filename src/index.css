@@ -206,12 +206,98 @@ body.has-custom-cursor [role="button"] {
 /* --- Responsive helpers --- */
 @media (max-width: 768px) {
   :root {
-    --section-padding: clamp(3rem, 6vw, 6rem);
-    --container-padding: 1.25rem;
+    --section-padding: clamp(2.5rem, 6vw, 5rem);
+    --container-padding: 1rem;
   }
   
   .custom-cursor {
     display: none !important;
+  }
+  
+  .desktop-only {
+    display: none !important;
+  }
+
+  /* Mobile button sizing */
+  .cta-gold,
+  .cta-outline {
+    padding: 0.85rem 1.8rem;
+    font-size: 0.8rem;
+    min-height: 44px;
+  }
+
+  /* Mobile badge sizing */
+  .award-badge {
+    padding: 0.5rem 1rem;
+    font-size: 0.7rem;
+  }
+
+  /* Mobile service cards */
+  .service-card-gold {
+    padding: 1.5rem;
+  }
+
+  /* Portfolio overlays: always visible on touch (no hover) */
+  .portfolio-overlay {
+    opacity: 1 !important;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, transparent 70%) !important;
+  }
+
+  .portfolio-overlay span {
+    font-size: 0.8rem;
+  }
+
+  /* Disable hover transforms on touch */
+  .footer-link-item:hover {
+    transform: none !important;
+  }
+  .footer-link-item:hover .link-line {
+    width: 0 !important;
+  }
+  .footer-contact-item:hover {
+    transform: none !important;
+  }
+
+  /* Scrollbar: thinner on mobile */
+  ::-webkit-scrollbar {
+    width: 3px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 480px) {
+  :root {
+    --section-padding: clamp(2rem, 5vw, 3.5rem);
+    --container-padding: 0.75rem;
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 8vw, 4rem);
+  }
+
+  h2 {
+    font-size: clamp(1.6rem, 5vw, 2.5rem);
+  }
+
+  .cta-gold,
+  .cta-outline {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.75rem;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+/* iOS safe area support */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
@@ -349,6 +435,94 @@ body.has-custom-cursor [role="button"] {
   padding-left: 16px;
   margin-left: -16px;
   position: relative;
+}
+.footer-link-item:hover {
+  color: #fff !important;
+  transform: translateX(8px) !important;
+}
+.footer-link-item .link-line {
+  width: 0;
+  transition: width 0.3s ease;
+}
+.footer-link-item:hover .link-line {
+  width: 1rem !important;
+}
+.footer-contact-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(0);
+  padding-left: 16px;
+  margin-left: -16px;
+  position: relative;
+}
+.footer-contact-item:hover {
+  color: #fff !important;
+  transform: translateX(5px) !important;
+}
+.footer-social-box {
+  background-color: rgba(255,255,255,0.02) !important;
+  border-color: rgba(255,255,255,0.05) !important;
+  color: var(--text-muted) !important;
+}
+.footer-social-box:hover {
+  background-color: rgba(255,255,255,0.05) !important;
+  border-color: var(--accent) !important;
+  color: #fff !important;
+}
+
+/* ============================================
+   COMPONENT UTILITY CLASSES
+   ============================================ */
+
+/* Layout */
+.section-dark      { background-color: #050505; }
+.section-darker    { background-color: #0D0D0D; }
+.pos-relative      { position: relative; }
+.overflow-hidden   { overflow: hidden; }
+
+/* Gradient overlays */
+.gradient-fade-top {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, var(--bg-primary) 0%, transparent 40%);
+  pointer-events: none;
+}
+.gradient-fade-bottom {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, var(--bg-primary) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+/* Lightbox */
+.lightbox-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.95);
+}
+.lightbox-close {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(0,0,0,0.7); color: #fff;
+  border: none; display: flex;
+  align-items: center; justify-content: center;
+  cursor: pointer; z-index: 10;
+}
+
+/* Film TV cards */
+.filmtv-card {
+  border-radius: 8px; overflow: hidden;
+  background: #111; border: 1px solid rgba(255,255,255,0.05);
+}
+.filmtv-card-details {
+  padding: 1.5rem; display: flex;
+  flex-direction: column; gap: 0.3rem;
+}
+
+/* Contact */
+.contact-form-field {
+  width: 100%; padding: 1rem;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 4px; color: #fff;
+  font-size: 1rem;
 }
 .footer-link-item:hover {
   color: #fff !important;

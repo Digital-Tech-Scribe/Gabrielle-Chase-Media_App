@@ -10,8 +10,6 @@ const tileAspectRatios = [
   ['4/3', '3/4', '4/3', '3/4', '4/3'],   
 ];
 
-const baseRowOffsets = ['8vw', '0', '-8vw'];
-
 const ArtDirScroll = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDesktop, setIsDesktop] = useState(true);
@@ -23,7 +21,6 @@ const ArtDirScroll = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // We only use scroll progress to fade out the Hero Text natively as it scrolls up
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
@@ -45,64 +42,66 @@ const ArtDirScroll = () => {
   
   const handleMouseLeave = () => { mouseX.set(0); mouseY.set(0); };
 
-  // Static hero composition values for the 3D grid
-  const gridScale = 0.95;
-  const gridRotation = -12;
-  const gridSkew = -8;
-  const peripheralOpacity = 0.35;
+  // Responsive 3D grid values
+  const gridScale = isDesktop ? 0.95 : 0.75;
+  const gridRotation = isDesktop ? -12 : -6;
+  const gridSkew = isDesktop ? -8 : -4;
+  const peripheralOpacity = isDesktop ? 0.35 : 0.25;
+  const baseRowOffsets = isDesktop ? ['8vw', '0', '-8vw'] : ['4vw', '0', '-4vw'];
   
-  // Mouse parallax
-  const mouseOffsetX = useTransform(() => smoothMouseX.get() * -8);
-  const mouseOffsetY = useTransform(() => smoothMouseY.get() * -8);
+  // Mouse parallax (desktop only)
+  const mouseOffsetX = useTransform(() => isDesktop ? smoothMouseX.get() * -8 : 0);
+  const mouseOffsetY = useTransform(() => isDesktop ? smoothMouseY.get() * -8 : 0);
   
-  // Shift the grid just slightly down globally
   const totalY = useTransform(() => mouseOffsetY.get() + 5);
   
   const currentX = useMotionTemplate`${mouseOffsetX}vw`;
   const currentY = useMotionTemplate`${totalY}vh`;
 
-  // Static offsets instead of scroll-based
-  const rowOffset0 = baseRowOffsets[0];
-  const rowOffset1 = baseRowOffsets[1];
-  const rowOffset2 = baseRowOffsets[2];
-  const dynamicRowOffsets = [rowOffset0, rowOffset1, rowOffset2];
+  const dynamicRowOffsets = baseRowOffsets;
 
   // Map filmTvProjects into the grid cells
   const getProject = (rowIndex: number, colIndex: number) => {
     const flatIndex = rowIndex * 5 + colIndex;
-    // We have ~10 projects, so we cycle them for the 15 grid slots
     return filmTvProjects[flatIndex % filmTvProjects.length];
   };
 
   return (
-    <div style={{ position: 'relative', width: '100vw' }}>
+    <div style={{ position: 'relative', width: '100vw', overflow: 'hidden' }}>
       
       {/* 1. HERO OVERLAY (Fades on scroll) */}
       <motion.div 
         style={{ 
           position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', 
           zIndex: 15, opacity: heroContentOpacity, pointerEvents: 'none',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          padding: isDesktop ? 0 : '0 1rem',
         }}
       >
         <div style={{ pointerEvents: 'auto', textAlign: 'center' }}>
           <motion.h1 
             layoutId="main-hero-title"
             style={{ 
-              fontSize: 'clamp(3.5rem, 10vw, 8rem)', fontWeight: 700, lineHeight: 0.9, 
+              fontSize: 'clamp(3rem, 10vw, 8rem)', fontWeight: 700, lineHeight: 0.9, 
               color: '#fff', textTransform: 'uppercase', letterSpacing: '-0.03em' 
             }}
           >
             GABRIELLE<br/>
             CHASE <span style={{ fontStyle: 'italic', fontWeight: 400 }}>MEDIA</span>
           </motion.h1>
-          <motion.p style={{ marginTop: '2rem', fontSize: '1.2rem', color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+          <motion.p style={{ 
+            marginTop: isDesktop ? '2rem' : '1.5rem', 
+            fontSize: isDesktop ? '1.2rem' : '0.9rem', 
+            color: 'var(--text-muted)', 
+            letterSpacing: '0.1em', 
+            textTransform: 'uppercase' 
+          }}>
             Award-Winning Art Direction & Content Production
           </motion.p>
         </div>
       </motion.div>
 
-      {/* 2. THE INTERACTIVE GRID - NOW A STANDARD HERO SECTION */}
+      {/* 2. THE INTERACTIVE GRID */}
       <div 
         ref={containerRef} 
         style={{ position: 'relative', zIndex: 10, backgroundColor: '#050505', height: '100vh', width: '100vw', overflow: 'hidden' }}
@@ -111,7 +110,7 @@ const ArtDirScroll = () => {
           style={{ 
             position: 'absolute', top: 0, height: '100vh', width: '100vw', 
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            perspective: '1200px' 
+            perspective: isDesktop ? '1200px' : '800px'
           }}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
@@ -119,12 +118,12 @@ const ArtDirScroll = () => {
           <div style={{ position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
             <motion.div
               style={{
-                display: 'flex', flexDirection: 'column', gap: '2vw', alignItems: 'center', justifyContent: 'center',
+                display: 'flex', flexDirection: 'column', gap: isDesktop ? '2vw' : '1.5vw', alignItems: 'center', justifyContent: 'center',
                 scale: gridScale, rotate: gridRotation, skewX: gridSkew, x: currentX, y: currentY, transformStyle: 'preserve-3d', willChange: 'transform'
               }}
             >
               {tileAspectRatios.map((rowRatios, rowIndex) => (
-                <motion.div key={rowIndex} style={{ display: 'flex', gap: '2vw', justifyContent: 'center', marginLeft: dynamicRowOffsets[rowIndex] }}>
+                <motion.div key={rowIndex} style={{ display: 'flex', gap: isDesktop ? '2vw' : '1.5vw', justifyContent: 'center', marginLeft: dynamicRowOffsets[rowIndex] }}>
                   {rowRatios.map((ratio, colIndex) => {
                     const project = getProject(rowIndex, colIndex);
                     const isFocusImage = rowIndex === 1 && colIndex === 2;
@@ -133,7 +132,7 @@ const ArtDirScroll = () => {
                       <motion.div
                         key={`${rowIndex}-${colIndex}`}
                         style={{
-                          flexShrink: 0, width: '30vw', aspectRatio: ratio, borderRadius: '16px', overflow: 'hidden',
+                          flexShrink: 0, width: isDesktop ? '30vw' : '40vw', aspectRatio: ratio, borderRadius: isDesktop ? '16px' : '10px', overflow: 'hidden',
                           backgroundColor: '#111', boxShadow: '0 30px 60px rgba(0,0,0,0.8)',
                           opacity: isFocusImage ? 1 : peripheralOpacity, transformOrigin: 'center center',
                           position: 'relative'
@@ -153,17 +152,21 @@ const ArtDirScroll = () => {
                           />
                         )}
                         
-                        {/* Interactive Overlay */}
+                        {/* Interactive Overlay — always visible on mobile */}
                         <motion.div 
-                          initial={{ opacity: 0 }}
-                          whileHover={{ opacity: 1 }}
+                          initial={{ opacity: isDesktop ? 0 : 1 }}
+                          whileHover={isDesktop ? { opacity: 1 } : {}}
                           style={{ 
-                            position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
-                            display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '1.5rem'
+                            position: 'absolute', inset: 0, 
+                            background: isDesktop 
+                              ? 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)'
+                              : 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 50%)',
+                            display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', 
+                            padding: isDesktop ? '1.5rem' : '0.75rem'
                           }}
                         >
-                          <h3 style={{ color: '#fff', fontSize: '1rem', margin: 0 }}>{project.title}</h3>
-                          <p style={{ color: 'var(--accent)', fontSize: '0.7rem', textTransform: 'uppercase', margin: '0.2rem 0 0 0' }}>{project.role}</p>
+                          <h3 style={{ color: '#fff', fontSize: isDesktop ? '1rem' : '0.7rem', margin: 0 }}>{project.title}</h3>
+                          <p style={{ color: 'var(--accent)', fontSize: isDesktop ? '0.7rem' : '0.55rem', textTransform: 'uppercase', margin: '0.2rem 0 0 0' }}>{project.role}</p>
                         </motion.div>
 
                         <Link to="/work" style={{ position: 'absolute', inset: 0, zIndex: 10 }} />

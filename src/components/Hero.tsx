@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { heroVideos } from '../assets/data';
@@ -5,14 +6,22 @@ import '../index.css';
 
 const Hero = () => {
   const navigate = useNavigate();
-  // Using the Rema CHARM or House of Gaa video as the main hero background
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth > 768);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const videoSrc = heroVideos[1] || heroVideos[0]; 
 
   return (
     <section style={{
       position: 'relative',
       height: '100vh',
-      minHeight: '600px',
+      minHeight: isDesktop ? '600px' : '500px',
       width: '100%',
       display: 'flex',
       alignItems: 'center',
@@ -48,7 +57,7 @@ const Hero = () => {
           <source src={videoSrc} type="video/mp4" />
         </video>
         
-        {/* Gradient overlays for text readability */}
+        {/* Gradient overlays */}
         <div style={{
           position: 'absolute',
           inset: 0,
@@ -61,7 +70,7 @@ const Hero = () => {
         }} />
       </motion.div>
 
-      {/* AMVCA Badge Top Right */}
+      {/* AMVCA Badge Top Right — desktop only */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -105,11 +114,11 @@ const Hero = () => {
         >
           <p style={{
             color: 'var(--text-light)',
-            fontSize: 'clamp(1.1rem, 2vw, 1.5rem)',
+            fontSize: 'clamp(1rem, 2vw, 1.5rem)',
             fontFamily: 'var(--font-heading)',
             letterSpacing: '0.05em',
             maxWidth: '600px',
-            margin: '0 auto 3rem',
+            margin: isDesktop ? '0 auto 3rem' : '0 auto 2rem',
             opacity: 0.9,
             textShadow: '0 2px 10px rgba(0,0,0,0.5)'
           }}>
@@ -122,7 +131,13 @@ const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}
+          style={{ 
+            display: 'flex', 
+            gap: isDesktop ? '1.5rem' : '1rem', 
+            justifyContent: 'center', 
+            flexWrap: 'wrap',
+            padding: isDesktop ? 0 : '0 0.5rem',
+          }}
         >
           <button 
             className="cta-gold cursor-hover"
@@ -149,6 +164,7 @@ const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5, duration: 1 }}
+        className="desktop-only"
         style={{
           position: 'absolute',
           bottom: '2rem',
